@@ -3,77 +3,128 @@
 @tailwind utilities;
 
 :root {
-  --canvas-bg: #F8F7F4;
-  --canvas-surface: #FFFFFF;
-  --canvas-border: #E3DDD1;
-  --ink-primary: #1A211B;
-  --ink-secondary: #576258;
-  --accent-main: #1E472D;
-  --accent-warm: #C27847;
+  --bg-main: #FEFADC;
+  --bg-card: #F6D4BA;
+  --bg-card-light: #FBF0E0;
+  --accent-primary: #F3B391;
+  --accent-dark: #241909;
+  --text-primary: #0F1108;
+  --text-secondary: #5C4A30;
+  --border-color: #E8C99A;
+  --success: #3A7D44;
+  --warning: #E07B39;
+  --danger: #C0392B;
 }
 
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--canvas-bg);
-  color: var(--ink-primary);
-  font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', -apple-system, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: 'Noto Sans Devanagari', 'Plus Jakarta Sans', -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Institutional Matte Panels */
-.matte-panel {
-  background-color: #FFFFFF;
-  border: 1px solid var(--canvas-border);
-  border-radius: 0.75rem; /* 12px clean corners */
-  box-shadow: 0 1px 3px rgba(26, 33, 27, 0.04), 0 4px 12px rgba(26, 33, 27, 0.02);
+.agro-card {
+  background-color: var(--bg-card-light);
+  border: 1.5px solid var(--border-color);
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(36,25,9,0.08), 0 1px 3px rgba(36,25,9,0.04);
 }
 
-/* Restrained Primary Action Button */
+.agro-card-warm {
+  background-color: var(--bg-card);
+  border: 1.5px solid var(--border-color);
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(36,25,9,0.1);
+}
+
 .btn-primary {
-  background-color: #1E472D;
-  color: #F8F7F4;
-  font-weight: 600;
-  border-radius: 0.5rem;
-  padding: 0.625rem 1.25rem;
-  font-size: 0.8125rem;
-  transition: background-color 0.15s ease;
+  background-color: var(--accent-primary);
+  color: var(--text-primary);
+  font-weight: 700;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  border: 2px solid #E8A070;
+  transition: all 0.15s ease;
+  cursor: pointer;
 }
 
 .btn-primary:hover {
-  background-color: #153320;
+  background-color: #E8A070;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(243,179,145,0.4);
 }
 
-/* Secondary Button */
 .btn-secondary {
-  background-color: #FFFFFF;
-  color: #1A211B;
-  border: 1px solid var(--canvas-border);
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
   font-weight: 600;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   padding: 0.625rem 1.25rem;
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   transition: all 0.15s ease;
+  cursor: pointer;
 }
 
 .btn-secondary:hover {
-  background-color: #F8F7F4;
-  border-color: #CFC5B4;
+  background-color: var(--bg-card);
+  border-color: #D4A870;
 }
 
-/* Custom restrained scrollbars */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+.btn-dark {
+  background-color: var(--accent-dark);
+  color: #FEFADC;
+  font-weight: 700;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  transition: all 0.15s ease;
+  cursor: pointer;
 }
-::-webkit-scrollbar-track {
-  background: #F8F7F4;
+
+.btn-dark:hover {
+  background-color: #3D2E14;
 }
-::-webkit-scrollbar-thumb {
-  background: #D5CCBE;
-  border-radius: 2px;
+
+.agro-input {
+  background-color: #FFFDF5;
+  border: 1.5px solid var(--border-color);
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  width: 100%;
+  transition: border-color 0.15s;
+  font-family: inherit;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #B5A896;
+
+.agro-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(243,179,145,0.2);
+}
+
+.agro-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-main); }
+::-webkit-scrollbar-thumb { background: #D4A870; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #B88A50; }
+
+/* Legacy compat - keep matte-panel working */
+.matte-panel {
+  background-color: var(--bg-card-light);
+  border: 1.5px solid var(--border-color);
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(36,25,9,0.08);
 }
