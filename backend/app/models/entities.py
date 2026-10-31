@@ -17,6 +17,7 @@ class User(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     phone_number = Column(String(15), unique=True, nullable=False)
+    password_hash = Column(String(255), nullable=True)
     full_name = Column(String(100), nullable=False)
     preferred_language = Column(String(10), default="hi")
     is_active = Column(Boolean, default=True)

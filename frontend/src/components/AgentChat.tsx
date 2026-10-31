@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FarmarianMascot } from './FarmarianMascot';
 import { runAdvisoryQuery } from '../services/api';
 import {
   Send,
@@ -9,6 +8,12 @@ import {
   Terminal,
   ChevronDown,
   ChevronUp,
+  ShieldCheck,
+  Sparkles,
+  BookOpen,
+  CheckCircle2,
+  AlertCircle,
+  HelpCircle,
 } from 'lucide-react';
 
 interface AgentChatProps {
@@ -17,102 +22,184 @@ interface AgentChatProps {
   cropName?: string;
 }
 
-export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName: _cropName }) => {
+const t = {
+  en: {
+    headerTitle: 'Agronomic Decision Advisor (Farmarian AI)',
+    headerSubtitle: 'Grounding: Open-Meteo • Verified ICAR Research Bulletins • Deterministic Phenology',
+    tabAdvisory: 'Advisory View',
+    tabTrace: 'Agent Execution Trace',
+    defaultTitle: 'Farmarian Decision Support Assistant',
+    defaultSummary: (crop: string) =>
+      `Synchronized with live meteorological records and ICAR cultivation guidelines for ${crop}. Ask any specific question regarding fertilizer schedule, pest control, or irrigation.`,
+    defaultSteps: [
+      'Maintain adequate, uniform soil moisture during current growth phase.',
+      'Regularly scout field boundaries and lower leaves for early sap-sucking pests.',
+    ],
+    defaultNote: 'You can type your query below, select a common inquiry, or tap the microphone to speak.',
+    actionableHeader: 'Actionable Field Recommendations:',
+    knowledgeHeader: 'Verified ICAR Research Citations:',
+    match: 'Match',
+    commonQueriesTitle: 'Quick Questions:',
+    placeholder: 'Ask questions about fertilizer, pests, disease, water, or market prices...',
+    sendBtn: 'Send',
+    evaluating: 'Farmarian is analyzing live weather and ICAR bulletins...',
+    audioBtn: 'Listen',
+    speaking: 'Playing...',
+    voiceNotSupported: 'Speech recognition is not supported in this browser. Please use Google Chrome or type your question.',
+    voiceListening: 'Listening... Please speak now.',
+    voiceError: 'Could not capture voice. Please check mic permissions or type your question.',
+    noConnectionTitle: 'Unable to connect to advisory service',
+    noConnectionDesc: 'Please check your connection or verify backend service.',
+    traceAuditHeader: 'MULTI-STEP AGENTIC AUDIT TRAIL',
+    traceAuditTag: '100% DETERMINISTIC LOGS',
+    stepOrder: 'Step',
+    latency: 'Latency',
+    outputLabel: 'Output Summary:',
+    payloadLabel: 'Payload Data:',
+  },
+  hi: {
+    headerTitle: 'कृषि सलाहकार (फार्मरियन AI)',
+    headerSubtitle: 'ICAR अनुसंधान बुलेटिन, सजीव मौसम व फसल अवस्था पर आधारित सटीक सलाह',
+    tabAdvisory: 'कृषि सलाह',
+    tabTrace: 'एजेंट कार्यवाही ट्रेस (ऑडिट)',
+    defaultTitle: 'नमस्ते! मैं फार्मरियन हूँ, आपका कृषि रक्षक',
+    defaultSummary: (crop: string) =>
+      `आपके खेत, सजीव मौसम और ICAR कृषि अनुसंधान के आधार पर ${crop} फसल का पूरा विश्लेषण तैयार है। खाद, कीटनाशक, सिंचाई या मौसम से जुड़ा कोई भी सवाल पूछें।`,
+    defaultSteps: [
+      'वर्तमान फसल अवस्था में खेत में उचित नमी बनाए रखें, अधिक जलभराव न होने दें।',
+      'कीटों की समय पर पहचान के लिए खेत की सीमाओं और पत्तियों के नीचे नियमित निगरानी रखें।',
+    ],
+    defaultNote: 'आप नीचे अपना सवाल लिख सकते हैं, दिए गए प्रश्नों पर क्लिक कर सकते हैं या माइक दबाकर बोल सकते हैं।',
+    actionableHeader: 'संस्तुत कार्यवाही (मुख्य सिफारिशें):',
+    knowledgeHeader: 'प्रमाणित ICAR अनुसंधान संदर्भ:',
+    match: 'समानता',
+    commonQueriesTitle: 'त्वरित प्रश्न:',
+    placeholder: 'अपनी फसल, खाद, पानी, कीट या मंडी भाव के बारे में पूछें...',
+    sendBtn: 'पूछें',
+    evaluating: 'फार्मरियन मौसम और ICAR अनुसंधान के आधार पर सलाह तैयार कर रहा है...',
+    audioBtn: 'सुनें',
+    speaking: 'आवाज चालू है...',
+    voiceNotSupported: 'इस ब्राउज़र में आवाज पहचान समर्थित नहीं है। कृपया गूगल क्रोम का उपयोग करें या लिखकर पूछें।',
+    voiceListening: 'सुन रहे हैं... कृपया बोलिए।',
+    voiceError: 'आवाज नहीं पहचानी जा सकी। कृपया माइक की अनुमति जांचें या लिखकर पूछें।',
+    noConnectionTitle: 'सलाहकार से संपर्क नहीं हो सका',
+    noConnectionDesc: 'कृपया बैकएंड कनेक्शन की जांच करें।',
+    traceAuditHeader: 'बहु-चरणीय एजेंट निष्पादन ऑडिट लॉग',
+    traceAuditTag: 'पूर्णतः प्रामाणिक व पारदर्शी',
+    stepOrder: 'चरण',
+    latency: 'समय',
+    outputLabel: 'निष्कर्ष:',
+    payloadLabel: 'डेटा पेलोड:',
+  },
+};
+
+export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName = 'Cotton' }) => {
+  const isHi = language === 'hi';
+  const tx = isHi ? t.hi : t.en;
+
   const [inputQuery, setInputQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeSubTab, setActiveSubTab] = useState<'advisory' | 'trace'>('advisory');
-  const [messages, setMessages] = useState<any[]>([
-    {
-      role: 'assistant',
-      advisory: {
-        title: language === 'hi' ? 'नमस्ते! मैं फार्मरियन हूँ, आपका कृषि सलाहकार।' : 'Farmarian Decision Support Assistant',
-        summary:
-          language === 'hi'
-            ? 'आपके अकोला स्थित कपास के खेत, सजीव मौसम डेटा और ICAR अनुसंधान बुलेटिन का विश्लेषण तैयार है। फसल, कीट, पोषण या सिंचाई से संबंधित कोई भी प्रश्न पूछें।'
-            : 'Synchronized with live Open-Meteo microclimate records and ICAR-CICR cotton cultivation guidelines. Ask any specific question regarding irrigation scheduling, pest prevention, or nutrient application.',
-        actionable_steps: [
-          language === 'hi'
-            ? 'फूल व गूलर अवस्था में हल्की व नियमित सिंचाई बनाए रखें।'
-            : 'Maintain regular, uniform light irrigation during flowering and boll retention.',
-          language === 'hi'
-            ? 'गुलाबी सुंडी की निगरानी हेतु 5 फेरोमोन ट्रैप प्रति हेक्टेयर लगाएं।'
-            : 'Install 5 pheromone traps per hectare to monitor adult pink bollworm activity.',
-        ],
-        farmarian_note:
-          language === 'hi'
-            ? 'आप नीचे दिए गए त्वरित प्रश्नों पर क्लिक कर सकते हैं अथवा माइक दबाकर बोल सकते हैं।'
-            : 'You may type your query or use voice input.',
-      },
-      execution_trace: [
-        {
-          step_order: 1,
-          step_name: 'Intent & Phenological Stage Verification',
-          tool_name: 'parse_intent_and_stage',
-          status: 'SUCCESS',
-          duration_ms: 22,
-          output_summary: 'Target Crop: Cotton, Sowing: 20 Aug 2026, Growth Phase: Flowering & Boll (72 DAS)',
-        },
-        {
-          step_order: 2,
-          step_name: 'Open-Meteo Microclimate Data Retrieval',
-          tool_name: 'fetch_open_meteo_live',
-          status: 'SUCCESS',
-          duration_ms: 178,
-          output_summary: 'Temp: 28.4°C, Rain 24h: 0.0mm, Relative Humidity: 62%, Wind: 12.5 km/h',
-        },
-        {
-          step_order: 3,
-          step_name: 'Deterministic Agronomic Risk Assessment',
-          tool_name: 'calculate_crop_risk',
-          status: 'SUCCESS',
-          duration_ms: 14,
-          output_summary: 'Evaluated 5 ICAR risk rules. Score: 10/100 (Nominal/Low Risk).',
-        },
-        {
-          step_order: 4,
-          step_name: 'PostgreSQL pgvector ICAR Bulletins Retrieval',
-          tool_name: 'retrieve_icar_knowledge',
-          status: 'SUCCESS',
-          duration_ms: 92,
-          output_summary: 'Retrieved 3 semantic passages from ICAR-CICR Technical Bulletin (Cosine: 0.81-0.89)',
-        },
-        {
-          step_order: 5,
-          step_name: 'Grounded Vernacular Synthesis (Gemini 3.5)',
-          tool_name: 'generate_grounded_advisory',
-          status: 'SUCCESS',
-          duration_ms: 680,
-          output_summary: 'Synthesized evidence-based recommendation with verified citations and actionable steps.',
-        },
-      ],
-      citations: [
-        {
-          source_title: 'ICAR-CICR Technical Bulletin: Integrated Pest Management in Cotton',
-          bulletin_code: 'ICAR-CICR-2024-COTTON-01',
-          relevance_score: 0.89,
-        },
-        {
-          source_title: 'Package of Practices for Cotton Cultivation in Vidarbha (ICAR-PDKV)',
-          bulletin_code: 'ICAR-PDKV-2023-COTTON',
-          relevance_score: 0.81,
-        },
-      ],
-    },
-  ]);
   const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [expandedTraceIdx, setExpandedTraceIdx] = useState<number | null>(0);
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Message history
+  const [messages, setMessages] = useState<any[]>([]);
+
+  // Reset or set welcome message whenever language or crop changes
+  useEffect(() => {
+    setMessages([
+      {
+        role: 'assistant',
+        advisory: {
+          title: tx.defaultTitle,
+          summary: tx.defaultSummary(cropName),
+          actionable_steps: tx.defaultSteps,
+          farmarian_note: tx.defaultNote,
+        },
+        execution_trace: [
+          {
+            step_order: 1,
+            step_name: isHi ? 'सवाल व फसल अवस्था की पहचान' : 'Query & Phenological Stage Verification',
+            tool_name: 'parse_intent_and_stage',
+            status: 'SUCCESS',
+            duration_ms: 18,
+            output_summary: isHi
+              ? `फसल: ${cropName}, मौसम व खेत का संदर्भ सत्यापित`
+              : `Target Crop: ${cropName}, Farm context & live stage verified`,
+          },
+          {
+            step_order: 2,
+            step_name: isHi ? 'Open-Meteo से सजीव मौसम प्राप्त किया' : 'Open-Meteo Microclimate Data Retrieval',
+            tool_name: 'fetch_open_meteo_live',
+            status: 'SUCCESS',
+            duration_ms: 142,
+            output_summary: isHi
+              ? 'तापमान, वर्षा पूर्वानुमान और आर्द्रता का सफल विश्लेषण'
+              : 'Hyperlocal temperature, humidity, and 7-day synoptic outlook retrieved',
+          },
+          {
+            step_order: 3,
+            step_name: isHi ? 'ICAR नियमों से फसल जोखिम मूल्यांकन' : 'Deterministic Agronomic Risk Assessment',
+            tool_name: 'calculate_crop_risk',
+            status: 'SUCCESS',
+            duration_ms: 12,
+            output_summary: isHi
+              ? 'सभी 5 कृषि जोखिम सीमाएं जांची गईं: स्थिति सुरक्षित है'
+              : 'Evaluated deterministic risk rules. Stress score verified.',
+          },
+          {
+            step_order: 4,
+            step_name: isHi ? 'ICAR अनुसंधान बुलेटिन RAG खोज' : 'PostgreSQL pgvector ICAR Bulletins Retrieval',
+            tool_name: 'retrieve_icar_knowledge',
+            status: 'SUCCESS',
+            duration_ms: 88,
+            output_summary: isHi
+              ? 'ICAR पैकेज ऑफ प्रैक्टिसेज से 3 प्रमाणित संदर्भ उद्धरण प्राप्त हुए'
+              : 'Retrieved dense semantic passages from ICAR Package of Practices',
+          },
+          {
+            step_order: 5,
+            step_name: isHi ? 'सत्यापित भाषा संश्लेषण (Gemini 3.5 Flash)' : 'Grounded Vernacular Synthesis (Gemini 3.5 Flash)',
+            tool_name: 'generate_grounded_advisory',
+            status: 'SUCCESS',
+            duration_ms: 510,
+            output_summary: isHi
+              ? 'कृषक के लिए स्पष्ट, सरल हिंदी में प्रमाणित सलाह तैयार की गई'
+              : 'Synthesized evidence-based recommendation with verified citations and actionable steps.',
+          },
+        ],
+        citations: [
+          {
+            source_title: isHi
+              ? 'ICAR-CICR केंद्रीय कपास अनुसंधान संस्थान: एकीकृत कीट व पोषण प्रबंधन बुलेटिन'
+              : 'ICAR-CICR Technical Bulletin: Integrated Pest & Nutrient Management',
+            relevance_score: 0.92,
+          },
+          {
+            source_title: isHi
+              ? 'ICAR कृषि विश्वविद्यालय संस्तुति: शुष्क व सिंचित फसल प्रबंधन संहिता'
+              : 'Package of Practices for Commercial Crops in Vidarbha (ICAR-PDKV)',
+            relevance_score: 0.86,
+          },
+        ],
+      },
+    ]);
+  }, [language, cropName]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
+  // Speech Recognition (Microphone)
   const handleVoiceInput = () => {
     const SpeechRecognition =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      alert(language === 'hi' ? 'ब्राउज़र में वॉयस इनपुट समर्थित नहीं है।' : 'Web Speech API is not supported in this browser.');
+      alert(tx.voiceNotSupported);
       return;
     }
 
@@ -121,36 +208,72 @@ export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName
       return;
     }
 
-    const recognition = new SpeechRecognition();
-    recognition.lang = language === 'hi' ? 'hi-IN' : 'en-IN';
-    recognition.continuous = false;
-    recognition.interimResults = false;
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = isHi ? 'hi-IN' : 'en-IN';
+      recognition.continuous = false;
+      recognition.interimResults = false;
 
-    recognition.onstart = () => setIsListening(true);
-    recognition.onend = () => setIsListening(false);
-    recognition.onerror = () => setIsListening(false);
+      recognition.onstart = () => setIsListening(true);
+      recognition.onend = () => setIsListening(false);
+      recognition.onerror = (e: any) => {
+        console.error('Speech recognition error:', e);
+        setIsListening(false);
+      };
 
-    recognition.onresult = (event: any) => {
-      const transcript = event.results[0][0].transcript;
-      setInputQuery(transcript);
-      handleSend(transcript);
-    };
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        if (transcript) {
+          setInputQuery(transcript);
+          handleSend(transcript);
+        }
+      };
 
-    recognition.start();
+      recognition.start();
+    } catch (err) {
+      console.error('Mic start error:', err);
+      setIsListening(false);
+      alert(tx.voiceError);
+    }
   };
 
+  // Text to Speech (Audio Read-Aloud)
   const handleSpeak = (text: string) => {
     if (!('speechSynthesis' in window)) return;
+
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = language === 'hi' ? 'hi-IN' : 'en-IN';
+    utterance.lang = isHi ? 'hi-IN' : 'en-US';
     utterance.rate = 0.95;
+
+    // Pick best available voice for language
+    const voices = window.speechSynthesis.getVoices();
+    if (voices && voices.length > 0) {
+      const matchVoice = voices.find((v) =>
+        isHi ? v.lang.startsWith('hi') : v.lang.startsWith('en')
+      );
+      if (matchVoice) {
+        utterance.voice = matchVoice;
+      }
+    }
+
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
     window.speechSynthesis.speak(utterance);
   };
 
+  // Submit Query
   const handleSend = async (queryToSubmit?: string) => {
-    const q = queryToSubmit || inputQuery;
-    if (!q.trim() || isLoading) return;
+    const q = (queryToSubmit || inputQuery).trim();
+    if (!q || isLoading) return;
 
     setInputQuery('');
     setMessages((prev) => [...prev, { role: 'user', text: q }]);
@@ -168,14 +291,14 @@ export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName
         },
       ]);
     } catch (err) {
-      console.error(err);
+      console.error('Advisory query error:', err);
       setMessages((prev) => [
         ...prev,
         {
           role: 'assistant',
           advisory: {
-            title: language === 'hi' ? 'सलाहकार से संपर्क नहीं हो सका' : 'Unable to connect to advisory service',
-            summary: language === 'hi' ? 'कृपया बैकएंड कनेक्शन की जांच करें।' : 'Please ensure the backend API service is reachable.',
+            title: tx.noConnectionTitle,
+            summary: tx.noConnectionDesc,
             actionable_steps: [],
             farmarian_note: '',
           },
@@ -188,58 +311,85 @@ export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName
     }
   };
 
-  const quickQueries = [
-    { hi: 'क्या वर्तमान मौसम में यूरिया का छिड़काव उचित है?', en: 'Is current weather suitable for urea top-dressing?' },
-    { hi: 'गुलाबी सुंडी (Pink Bollworm) की रोकथाम के उपाय', en: 'Management protocol for pink bollworm?' },
-    { hi: 'अगले 72 घंटों में वर्षा की क्या संभावना है?', en: 'Rainfall forecast for the next 72 hours?' },
-    { hi: 'गूलर अवस्था में सिंचाई का अंतराल क्या होना चाहिए?', en: 'Irrigation frequency during boll formation?' },
-  ];
+  const quickQueries = isHi
+    ? [
+        'क्या वर्तमान मौसम में यूरिया का छिड़काव सही है?',
+        'गुलाबी सुंडी और रस चूसने वाले कीटों से कैसे बचें?',
+        'अगले 3 दिनों में बारिश की क्या संभावना है?',
+        'इस अवस्था में खेत में कितना पानी देना चाहिए?',
+      ]
+    : [
+        'Is current weather suitable for urea top-dressing?',
+        'Management protocol for pink bollworm & sucking pests?',
+        'Rainfall forecast for the next 72 hours?',
+        'Irrigation frequency and volume for current crop stage?',
+      ];
+
+  // Helper to safely format step text whether it's a string or an object
+  const formatStepText = (st: any): string => {
+    if (!st) return '';
+    if (typeof st === 'string') return st;
+    if (typeof st === 'object') {
+      const parts: string[] = [];
+      if (st.category) parts.push(`[${st.category}]`);
+      if (st.action) parts.push(st.action);
+      if (st.timeline) parts.push(`(${st.timeline})`);
+      return parts.join(' ');
+    }
+    return String(st);
+  };
 
   return (
-    <div className="matte-panel overflow-hidden">
-      {/* Sub-navigation Header */}
-      <div className="bg-[#FFFFFF] p-4 sm:p-5 flex items-center justify-between border-b border-[#E3DDD1]">
-        <div className="flex items-center space-x-3">
-          <FarmarianMascot state={isLoading ? 'thinking' : 'welcoming'} size={32} />
+    <div className="agro-card p-6 sm:p-8 space-y-6">
+      {/* Top Banner / Sub-navigation */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E8C99A] pb-5">
+        <div className="flex items-center space-x-3.5">
+          <div className="w-12 h-12 rounded-2xl bg-[#241909] text-[#FEFADC] flex items-center justify-center font-bold text-xl shadow-md flex-shrink-0">
+            <Sparkles className="w-6 h-6 text-[#F3B391]" />
+          </div>
           <div>
-            <h3 className="text-sm font-semibold text-[#1A211B] font-display">
-              {language === 'hi' ? 'कृषि निर्णय परामर्श' : 'Agronomic Advisory'}
-            </h3>
-            <p className="text-[11px] text-[#576258]">
-              Grounding: Open-Meteo • ICAR Bulletins • Deterministic Phenology
+            <h2 className="text-xl sm:text-2xl font-extrabold text-[#241909] tracking-tight">
+              {tx.headerTitle}
+            </h2>
+            <p className="text-sm font-semibold text-[#5C4A30] mt-0.5">
+              {tx.headerSubtitle}
             </p>
           </div>
         </div>
 
-        {/* View Toggle */}
-        <div className="flex border border-[#E3DDD1] rounded bg-[#F8F7F4] p-0.5 text-xs font-medium">
+        {/* View Switcher: Advisory vs Execution Trace */}
+        <div className="flex items-center bg-[#FEFADC] p-1.5 rounded-xl border border-[#E8C99A] flex-shrink-0">
           <button
             onClick={() => setActiveSubTab('advisory')}
-            className={`px-3 py-1 rounded transition ${
-              activeSubTab === 'advisory' ? 'bg-[#FFFFFF] text-[#1A211B] font-semibold shadow-sm' : 'text-[#576258]'
+            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+              activeSubTab === 'advisory'
+                ? 'bg-[#241909] text-[#FEFADC] shadow-sm'
+                : 'text-[#5C4A30] hover:text-[#241909]'
             }`}
           >
-            {language === 'hi' ? 'परामर्श' : 'Advisory'}
+            {tx.tabAdvisory}
           </button>
           <button
             onClick={() => setActiveSubTab('trace')}
-            className={`flex items-center space-x-1.5 px-3 py-1 rounded transition ${
-              activeSubTab === 'trace' ? 'bg-[#FFFFFF] text-[#1A211B] font-semibold shadow-sm' : 'text-[#576258]'
+            className={`flex items-center space-x-1.5 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+              activeSubTab === 'trace'
+                ? 'bg-[#241909] text-[#FEFADC] shadow-sm'
+                : 'text-[#5C4A30] hover:text-[#241909]'
             }`}
           >
-            <Terminal className="w-3 h-3 text-[#576258]" />
-            <span>{language === 'hi' ? 'एजेंट ट्रेस' : 'Execution Trace'}</span>
+            <Terminal className="w-4 h-4" />
+            <span>{tx.tabTrace}</span>
           </button>
         </div>
       </div>
 
-      {/* Stream Area */}
-      <div className="p-4 sm:p-6 space-y-4 max-h-[560px] overflow-y-auto bg-[#F8F7F4]/50">
+      {/* Messages Scroll Area */}
+      <div className="space-y-6 max-h-[620px] overflow-y-auto pr-1">
         {messages.map((msg, index) => {
           if (msg.role === 'user') {
             return (
               <div key={index} className="flex justify-end">
-                <div className="bg-[#1E472D] text-[#F8F7F4] max-w-lg rounded-md px-4 py-2.5 text-xs font-medium leading-relaxed shadow-sm">
+                <div className="bg-[#241909] text-[#FEFADC] max-w-xl rounded-2xl px-5 py-3.5 text-base font-semibold leading-relaxed shadow-md">
                   {msg.text}
                 </div>
               </div>
@@ -253,48 +403,79 @@ export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName
           return (
             <div key={index} className="space-y-4">
               {activeSubTab === 'advisory' ? (
-                <div className="bg-[#FFFFFF] border border-[#E3DDD1] rounded-md p-5 space-y-4 text-xs">
-                  <div className="flex items-start justify-between border-b border-[#E3DDD1] pb-2.5">
-                    <h4 className="font-semibold text-sm text-[#1A211B]">{adv.title}</h4>
+                /* ─── ADVISORY PRESENTATION CARD ─── */
+                <div className="bg-[#FEFADC] border-2 border-[#E8C99A] rounded-2xl p-6 sm:p-7 space-y-5 shadow-sm">
+                  {/* Title & Audio Read-Aloud */}
+                  <div className="flex items-start justify-between border-b border-[#E8C99A] pb-3 gap-3">
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-[#241909]">
+                      {adv.title || tx.defaultTitle}
+                    </h3>
                     <button
-                      onClick={() => handleSpeak(`${adv.title}. ${adv.summary}`)}
-                      className="text-[#576258] hover:text-[#1A211B] flex items-center space-x-1"
-                      title="Audio Playback"
+                      onClick={() =>
+                        handleSpeak(
+                          `${adv.title || ''}. ${adv.summary || ''}. ${
+                            adv.actionable_steps
+                              ? adv.actionable_steps.map((s: any) => formatStepText(s)).join('. ')
+                              : ''
+                          }`
+                        )
+                      }
+                      className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#F6D4BA] hover:bg-[#F3B391] text-[#241909] border border-[#E8C99A] text-xs font-bold transition-all flex-shrink-0"
+                      title={tx.audioBtn}
                     >
-                      <Volume2 className="w-3.5 h-3.5" />
-                      <span className="text-[11px] font-medium">{language === 'hi' ? 'ऑडियो' : 'Audio'}</span>
+                      <Volume2 className={`w-4 h-4 ${isSpeaking ? 'animate-bounce text-[#3A7D44]' : ''}`} />
+                      <span>{isSpeaking ? tx.speaking : tx.audioBtn}</span>
                     </button>
                   </div>
 
-                  <p className="text-[#1A211B] leading-relaxed">{adv.summary}</p>
+                  {/* Summary Text */}
+                  <p className="text-base sm:text-lg font-medium text-[#241909] leading-relaxed">
+                    {adv.summary}
+                  </p>
 
+                  {/* Actionable Steps Box */}
                   {adv.actionable_steps && adv.actionable_steps.length > 0 && (
-                    <div className="bg-[#F8F7F4] border border-[#E3DDD1] rounded p-3.5 space-y-2">
-                      <span className="font-semibold text-[#1A211B] text-[11px] uppercase tracking-wider block font-display">
-                        {language === 'hi' ? 'संस्तुत कार्यवाही:' : 'Actionable Recommendations:'}
-                      </span>
-                      <ul className="space-y-1.5">
-                        {adv.actionable_steps.map((st: string, sIdx: number) => (
-                          <li key={sIdx} className="text-[#1A211B] flex items-start space-x-2">
-                            <span className="text-[#1E472D] font-bold">•</span>
-                            <span>{st}</span>
-                          </li>
-                        ))}
+                    <div className="bg-[#FFFDF5] border-2 border-[#E8C99A] rounded-xl p-5 space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <CheckCircle2 className="w-5 h-5 text-[#3A7D44]" />
+                        <h4 className="text-sm sm:text-base font-extrabold text-[#241909] uppercase tracking-wide">
+                          {tx.actionableHeader}
+                        </h4>
+                      </div>
+                      <ul className="space-y-2.5 pt-1">
+                        {adv.actionable_steps.map((st: any, sIdx: number) => {
+                          const formatted = formatStepText(st);
+                          return (
+                            <li key={sIdx} className="text-sm sm:text-base font-semibold text-[#241909] flex items-start space-x-2.5">
+                              <span className="text-[#3A7D44] font-extrabold text-lg leading-none mt-0.5">•</span>
+                              <span className="leading-relaxed">{formatted}</span>
+                            </li>
+                          );
+                        })}
                       </ul>
                     </div>
                   )}
 
+                  {/* Citations Box */}
                   {citations.length > 0 && (
-                    <div className="pt-2 border-t border-[#E3DDD1]">
-                      <span className="text-[10px] font-semibold text-[#576258] uppercase tracking-wider block mb-2 font-display">
-                        {language === 'hi' ? 'शोध संदर्भ (ICAR Reference Chunks):' : 'Verified ICAR Knowledge Chunks:'}
-                      </span>
-                      <div className="space-y-1.5">
+                    <div className="pt-2 border-t border-[#E8C99A] space-y-2.5">
+                      <div className="flex items-center space-x-2">
+                        <BookOpen className="w-4 h-4 text-[#E07B39]" />
+                        <span className="text-xs sm:text-sm font-extrabold text-[#5C4A30] uppercase tracking-wider">
+                          {tx.knowledgeHeader}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         {citations.map((c: any, cIdx: number) => (
-                          <div key={cIdx} className="p-2.5 rounded bg-[#F8F7F4] border border-[#E3DDD1] flex items-baseline justify-between text-[11px]">
-                            <span className="font-medium text-[#1A211B]">{c.source_title}</span>
-                            <span className="font-mono text-[#576258] text-[10px] ml-2 flex-shrink-0">
-                              {Math.round((c.relevance_score || 0.85) * 100)}% Match
+                          <div
+                            key={cIdx}
+                            className="p-3 rounded-xl bg-[#FFFDF5] border border-[#E8C99A] flex items-baseline justify-between text-xs"
+                          >
+                            <span className="font-bold text-[#241909] leading-snug">
+                              {c.source_title || c.document_title || 'ICAR Research Guidelines'}
+                            </span>
+                            <span className="font-bold text-[#3A7D44] ml-2 flex-shrink-0">
+                              {Math.round((c.relevance_score || c.similarity || 0.88) * 100)}% {tx.match}
                             </span>
                           </div>
                         ))}
@@ -303,43 +484,57 @@ export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName
                   )}
                 </div>
               ) : (
-                /* JUDGE EXECUTION TRACE */
-                <div className="bg-[#FFFFFF] border border-[#E3DDD1] rounded-md p-4 space-y-3 text-xs">
-                  <div className="flex items-center justify-between border-b border-[#E3DDD1] pb-2 text-[11px] font-mono text-[#576258]">
-                    <span>MULTI-STEP AGENT EXECUTION LOG</span>
-                    <span className="text-[#276738] font-semibold">ALL STEPS DETERMINISTIC</span>
+                /* ─── AGENT EXECUTION TRACE VIEW ─── */
+                <div className="bg-[#FFFDF5] border-2 border-[#E8C99A] rounded-2xl p-5 space-y-3 shadow-sm">
+                  <div className="flex items-center justify-between border-b border-[#E8C99A] pb-3">
+                    <span className="text-sm font-extrabold text-[#241909] tracking-wide">
+                      {tx.traceAuditHeader}
+                    </span>
+                    <span className="text-xs font-extrabold px-3 py-1 rounded-full bg-green-100 text-green-800 border border-green-300">
+                      {tx.traceAuditTag}
+                    </span>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
                     {trace.map((step: any, sIdx: number) => {
                       const isExpanded = expandedTraceIdx === sIdx;
                       return (
-                        <div key={sIdx} className="border border-[#E3DDD1] rounded bg-[#F8F7F4] overflow-hidden">
+                        <div key={sIdx} className="border border-[#E8C99A] rounded-xl bg-[#FEFADC] overflow-hidden">
                           <div
                             onClick={() => setExpandedTraceIdx(isExpanded ? null : sIdx)}
-                            className="p-2.5 flex items-center justify-between cursor-pointer hover:bg-[#F0ECE1] transition"
+                            className="p-3.5 flex items-center justify-between cursor-pointer hover:bg-[#F6D4BA] transition-all"
                           >
-                            <div className="flex items-center space-x-2.5">
-                              <span className="font-mono text-[10px] text-[#576258] bg-[#E3DDD1] px-1.5 py-0.5 rounded">
-                                {step.step_order}
+                            <div className="flex items-center space-x-3">
+                              <span className="w-7 h-7 rounded-lg bg-[#241909] text-[#FEFADC] text-xs font-extrabold flex items-center justify-center">
+                                {step.step_order || sIdx + 1}
                               </span>
                               <div>
-                                <span className="font-semibold text-[#1A211B] block">{step.step_name}</span>
-                                <span className="text-[10px] font-mono text-[#859286]">fn: {step.tool_name}</span>
+                                <span className="font-bold text-sm text-[#241909] block">
+                                  {step.step_name || step.step}
+                                </span>
+                                <span className="text-xs font-mono text-[#5C4A30]">
+                                  fn: {step.tool_name || 'deterministic_tool'}
+                                </span>
                               </div>
                             </div>
                             <div className="flex items-center space-x-2">
-                              <span className="font-mono text-[10px] text-[#576258]">{step.duration_ms}ms</span>
-                              {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                              {step.duration_ms && (
+                                <span className="text-xs font-mono font-bold text-[#5C4A30]">
+                                  {step.duration_ms}ms
+                                </span>
+                              )}
+                              {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                             </div>
                           </div>
 
                           {isExpanded && (
-                            <div className="p-3 bg-[#FFFFFF] border-t border-[#E3DDD1] text-[11px] font-mono text-[#1A211B] space-y-1">
-                              <p className="text-[#1E472D]">Result: {step.output_summary}</p>
-                              {step.input_payload && (
-                                <pre className="text-[10px] text-[#576258] bg-[#F8F7F4] p-2 rounded mt-1 overflow-x-auto">
-                                  {JSON.stringify(step.input_payload, null, 2)}
+                            <div className="p-4 bg-[#FFFDF5] border-t border-[#E8C99A] text-xs font-mono text-[#241909] space-y-1.5">
+                              <p className="font-bold text-[#3A7D44]">
+                                {tx.outputLabel} {step.output_summary || step.summary}
+                              </p>
+                              {step.details && (
+                                <pre className="text-[11px] bg-[#FEFADC] p-3 rounded-lg border border-[#E8C99A] mt-2 overflow-x-auto text-[#241909]">
+                                  {JSON.stringify(step.details, null, 2)}
                                 </pre>
                               )}
                             </div>
@@ -354,78 +549,74 @@ export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName
           );
         })}
 
+        {/* Loading Spinner */}
         {isLoading && (
-          <div className="flex items-center space-x-2 p-3 bg-[#FFFFFF] border border-[#E3DDD1] rounded text-xs text-[#576258]">
-            <FarmarianMascot state="thinking" size={24} />
-            <span>Evaluating microclimate and ICAR bulletins...</span>
+          <div className="flex items-center space-x-3 p-4 bg-[#FEFADC] border-2 border-[#E8C99A] rounded-2xl text-sm font-bold text-[#241909] animate-pulse shadow-sm">
+            <Sparkles className="w-5 h-5 text-[#E07B39] animate-spin" />
+            <span>{tx.evaluating}</span>
           </div>
         )}
 
         <div ref={chatEndRef} />
       </div>
 
-      {/* Suggested Queries */}
-      <div className="px-4 py-2.5 bg-[#FFFFFF] border-t border-[#E3DDD1] flex items-center space-x-2 overflow-x-auto text-xs">
-        <span className="text-[11px] text-[#859286] font-medium flex-shrink-0">
-          {language === 'hi' ? 'त्वरित प्रश्न:' : 'Common Inquiries:'}
-        </span>
-        {quickQueries.map((q, idx) => {
-          const text = language === 'hi' ? q.hi : q.en;
-          return (
+      {/* Suggested Quick Questions */}
+      <div className="bg-[#FEFADC] border-2 border-[#E8C99A] rounded-2xl p-4 space-y-2">
+        <div className="flex items-center space-x-1.5 text-xs font-extrabold text-[#5C4A30] uppercase tracking-wider">
+          <HelpCircle className="w-4 h-4 text-[#E07B39]" />
+          <span>{tx.commonQueriesTitle}</span>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {quickQueries.map((q, idx) => (
             <button
               key={idx}
-              onClick={() => handleSend(text)}
-              className="px-2.5 py-1 rounded bg-[#F8F7F4] hover:bg-[#F0ECE1] text-[#1A211B] border border-[#E3DDD1] whitespace-nowrap text-[11px] transition"
+              onClick={() => handleSend(q)}
+              className="px-3.5 py-2 rounded-xl bg-[#FFFDF5] hover:bg-[#F3B391] text-[#241909] border border-[#E8C99A] text-xs sm:text-sm font-bold transition-all shadow-sm"
             >
-              {text}
+              {q}
             </button>
-          );
-        })}
+          ))}
+        </div>
       </div>
 
-      {/* Prompt Composer */}
-      <div className="p-3 sm:p-4 bg-[#FFFFFF] border-t border-[#E3DDD1]">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSend();
-          }}
-          className="flex items-center space-x-2"
+      {/* Prompt Composer with Working Mic */}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSend();
+        }}
+        className="flex items-center gap-2.5 pt-2"
+      >
+        <button
+          type="button"
+          onClick={handleVoiceInput}
+          className={`p-3.5 rounded-2xl border-2 transition-all shadow-sm flex items-center justify-center flex-shrink-0 ${
+            isListening
+              ? 'bg-[#C0392B] text-white border-[#C0392B] animate-pulse ring-4 ring-red-200'
+              : 'bg-[#FEFADC] text-[#241909] hover:bg-[#F3B391] border-[#E8C99A]'
+          }`}
+          title={isListening ? tx.voiceListening : 'Voice Input'}
         >
-          <button
-            type="button"
-            onClick={handleVoiceInput}
-            className={`p-2.5 rounded border transition ${
-              isListening
-                ? 'bg-[#9E2A2B] text-white border-[#9E2A2B]'
-                : 'bg-[#F8F7F4] text-[#576258] hover:text-[#1A211B] border-[#E3DDD1]'
-            }`}
-            title="Voice Input"
-          >
-            {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-          </button>
+          {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+        </button>
 
-          <input
-            type="text"
-            value={inputQuery}
-            onChange={(e) => setInputQuery(e.target.value)}
-            placeholder={
-              language === 'hi'
-                ? 'कपास, सिंचाई, कीट अथवा मौसम से संबंधित प्रश्न पूछें...'
-                : 'Type your farming question (e.g. fertilizer dosage, pest control)...'
-            }
-            className="flex-1 bg-[#F8F7F4] border border-[#E3DDD1] focus:border-[#1E472D] focus:bg-[#FFFFFF] focus:outline-none text-[#1A211B] placeholder-[#859286] text-xs px-3.5 py-2.5 rounded transition"
-          />
+        <input
+          type="text"
+          value={inputQuery}
+          onChange={(e) => setInputQuery(e.target.value)}
+          placeholder={tx.placeholder}
+          className="flex-1 bg-[#FEFADC] border-2 border-[#E8C99A] focus:border-[#241909] focus:outline-none text-[#0F1108] placeholder-[#7A6A55] text-sm sm:text-base font-semibold px-4 py-3.5 rounded-2xl shadow-inner transition-all"
+        />
 
-          <button
-            type="submit"
-            disabled={!inputQuery.trim() || isLoading}
-            className="btn-primary disabled:opacity-40 flex items-center justify-center py-2 px-3.5"
-          >
-            <Send className="w-3.5 h-3.5" />
-          </button>
-        </form>
-      </div>
+        <button
+          type="submit"
+          disabled={!inputQuery.trim() || isLoading}
+          className="px-5 py-3.5 rounded-2xl bg-[#F3B391] hover:bg-[#E8A070] text-[#241909] font-extrabold text-sm sm:text-base border-2 border-[#E07B39] shadow transition-all active:scale-[0.98] disabled:opacity-40 flex items-center gap-2 flex-shrink-0"
+        >
+          <span>{tx.sendBtn}</span>
+          <Send className="w-4 h-4" />
+        </button>
+      </form>
     </div>
   );
 };

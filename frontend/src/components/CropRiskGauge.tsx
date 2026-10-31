@@ -1,18 +1,53 @@
 import React from 'react';
-import { ShieldCheck, AlertCircle } from 'lucide-react';
+import { ShieldCheck, AlertCircle, RefreshCw, Activity } from 'lucide-react';
 
 interface CropRiskGaugeProps {
   riskData: any;
   language: string;
 }
 
+const t = {
+  en: {
+    loading: 'Calculating crop risk from ICAR rules...',
+    title: 'Crop Environmental Stress Gauge',
+    subtitle: 'Derived from ICAR agronomic thresholds & live weather',
+    stress: 'Cumulative Environmental Stress:',
+    allGood: 'All agronomic conditions are within safe optimal limits.',
+    nearLimit: 'Environmental metrics are approaching critical stress thresholds for this growth stage.',
+    rules: 'Evaluated ICAR Agronomic Factors:',
+    severe: 'Severe Risk',
+    high: 'High Risk',
+    moderate: 'Moderate Risk',
+    low: 'Safe / Nominal',
+    observed: 'Observed Metric:',
+  },
+  hi: {
+    loading: 'ICAR नियमों और मौसम के आधार पर जोखिम जांचा जा रहा है...',
+    title: 'फसल सुरक्षा व तनाव सूचकांक',
+    subtitle: 'ICAR अनुसंधान सीमाएं और सजीव मौसम का सीधा विश्लेषण',
+    stress: 'समग्र पर्यावरणीय तनाव:',
+    allGood: 'सभी मौसमी पैरामीटर सुरक्षित सीमा में हैं — फसल को अभी कोई खतरा नहीं है।',
+    nearLimit: 'मौसम के कुछ मानक तनाव सीमा के पास हैं — फसल पर नज़र रखें।',
+    rules: 'जांचे गए प्रमुख कृषि कारण:',
+    severe: 'अत्यधिक खतरा',
+    high: 'ज़्यादा खतरा',
+    moderate: 'मध्यम तनाव',
+    low: 'सुरक्षित व सामान्य',
+    observed: 'दर्ज किया गया मान:',
+  },
+};
+
 export const CropRiskGauge: React.FC<CropRiskGaugeProps> = ({ riskData, language }) => {
+  const isHi = language === 'hi';
+  const tx = isHi ? t.hi : t.en;
+
   if (!riskData) {
     return (
-      <div className="matte-panel p-6 text-center text-[#576258] text-xs">
-        {language === 'hi'
-          ? 'ICAR नियमों पर आधारित फसल जोखिम की गणना हो रही है...'
-          : 'Evaluating deterministic agronomic rules...'}
+      <div className="agro-card p-6 text-center text-[#5C4A30] text-sm py-10">
+        <div className="animate-pulse flex flex-col items-center gap-3">
+          <RefreshCw className="w-7 h-7 text-[#E07B39] animate-spin" />
+          <span className="font-bold">{tx.loading}</span>
+        </div>
       </div>
     );
   }
@@ -21,129 +56,83 @@ export const CropRiskGauge: React.FC<CropRiskGaugeProps> = ({ riskData, language
   const level = riskData.risk_level || 'LOW';
   const factors = riskData.primary_factors || [];
 
-  const getStyle = (lvl: string) => {
-    switch (lvl) {
-      case 'SEVERE':
-        return {
-          text: 'text-[#9E2A2B]',
-          bg: 'bg-[#F9ECEC]',
-          border: 'border-[#9E2A2B]/40',
-          barColor: 'bg-[#9E2A2B]',
-          label: language === 'hi' ? 'गंभीर जोखिम' : 'Severe Risk',
-        };
-      case 'HIGH':
-        return {
-          text: 'text-[#995A1E]',
-          bg: 'bg-[#FBF2E9]',
-          border: 'border-[#995A1E]/40',
-          barColor: 'bg-[#995A1E]',
-          label: language === 'hi' ? 'उच्च जोखिम' : 'Elevated Risk',
-        };
-      case 'MODERATE':
-        return {
-          text: 'text-[#8A6318]',
-          bg: 'bg-[#F9F5EA]',
-          border: 'border-[#8A6318]/40',
-          barColor: 'bg-[#8A6318]',
-          label: language === 'hi' ? 'मध्यम जोखिम' : 'Moderate Sensitivity',
-        };
-      default:
-        return {
-          text: 'text-[#276738]',
-          bg: 'bg-[#EDF6EF]',
-          border: 'border-[#276738]/40',
-          barColor: 'bg-[#276738]',
-          label: language === 'hi' ? 'सामान्य / सुरक्षित' : 'Nominal / Favorable',
-        };
-    }
+  const styles: Record<string, { text: string; bg: string; border: string; bar: string; label: string }> = {
+    SEVERE:   { text: 'text-red-900', bg: 'bg-red-100', border: 'border-red-300', bar: 'bg-[#C0392B]', label: tx.severe },
+    HIGH:     { text: 'text-orange-950', bg: 'bg-orange-100', border: 'border-orange-300', bar: 'bg-[#E07B39]', label: tx.high },
+    MODERATE: { text: 'text-yellow-950', bg: 'bg-yellow-100', border: 'border-yellow-300', bar: 'bg-[#E09B39]', label: tx.moderate },
+    LOW:      { text: 'text-green-950', bg: 'bg-green-100', border: 'border-green-300', bar: 'bg-[#3A7D44]', label: tx.low },
   };
-
-  const currentStyle = getStyle(level);
+  const s = styles[level] || styles.LOW;
 
   return (
-    <div className="matte-panel p-6 space-y-6">
+    <div className="agro-card p-6 sm:p-8 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-[#E3DDD1] pb-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E8C99A] pb-4">
         <div>
-          <h3 className="text-sm font-semibold text-[#1A211B] font-display">
-            {language === 'hi' ? 'फसल तनाव जोखिम सूचकांक' : 'Crop Stress Risk Assessment'}
+          <h3 className="text-xl sm:text-2xl font-extrabold text-[#241909] flex items-center gap-2.5">
+            <Activity className="w-6 h-6 text-[#E07B39]" />
+            <span>{tx.title}</span>
           </h3>
-          <p className="text-[11px] text-[#576258] mt-0.5">
-            ICAR Deterministic Rule Engine • Zero Hallucination
-          </p>
+          <p className="text-sm font-semibold text-[#5C4A30] mt-1">{tx.subtitle}</p>
         </div>
-        <span
-          className={`text-[11px] font-semibold px-2.5 py-1 rounded border ${currentStyle.bg} ${currentStyle.text} ${currentStyle.border}`}
-        >
-          {currentStyle.label} ({score}/100)
+        <span className={`text-xs sm:text-sm font-extrabold px-3.5 py-1.5 rounded-full border ${s.bg} ${s.text} ${s.border} shadow-sm self-start sm:self-auto`}>
+          {s.label} ({score}/100)
         </span>
       </div>
 
-      {/* Progress Metric Bar */}
-      <div className="space-y-2">
-        <div className="flex justify-between items-baseline text-xs">
-          <span className="text-[#576258] font-medium">
-            {language === 'hi' ? 'वर्तमान समग्र संवेदनशीलता' : 'Cumulative Environmental Stress'}
-          </span>
-          <span className="font-mono font-semibold text-[#1A211B]">{score} / 100</span>
+      {/* Numerical Progress Metric */}
+      <div className="space-y-2.5">
+        <div className="flex justify-between items-baseline text-sm font-extrabold text-[#241909]">
+          <span>{tx.stress}</span>
+          <span className="text-lg font-black tabular-nums">{score} / 100</span>
         </div>
-        <div className="w-full h-2 bg-[#E3DDD1] rounded-full overflow-hidden">
+        <div className="w-full h-3.5 bg-[#E8C99A] rounded-full overflow-hidden shadow-inner">
           <div
-            className={`h-full ${currentStyle.barColor} transition-all duration-500`}
-            style={{ width: `${Math.max(4, score)}%` }}
+            className={`h-full ${s.bar} rounded-full transition-all duration-700`}
+            style={{ width: `${Math.max(5, score)}%` }}
           />
         </div>
+        <div className="flex justify-between text-xs font-bold text-[#5C4A30]">
+          <span>{isHi ? 'सुरक्षित (0)' : 'Safe (0)'}</span>
+          <span>{isHi ? 'मध्यम (50)' : 'Moderate (50)'}</span>
+          <span>{isHi ? 'अत्यधिक खतरा (100)' : 'Danger (100)'}</span>
+        </div>
       </div>
 
-      {/* Agronomic Summary Statement */}
-      <div className="p-3.5 rounded bg-[#F8F7F4] border border-[#E3DDD1] text-xs text-[#576258] leading-relaxed">
-        {level === 'LOW' ? (
-          <p>
-            {language === 'hi'
-              ? 'वर्तमान तापमान, मृदा नमी और वर्षा मान कपास के फूल व गूलर खिलने के लिए पूर्णतः अनुकूल हैं। किसी निवारक कीटनाशक की आवश्यकता नहीं है।'
-              : 'Current thermal units and moisture levels are within optimal tolerance limits for cotton flowering and boll development.'}
-          </p>
-        ) : (
-          <p>
-            {language === 'hi'
-              ? 'सूक्ष्म-जलवायु पैरामीटर तनाव सीमा के निकट हैं। संस्तुत प्रबंधन प्रोटोकॉल का पालन करें।'
-              : 'Environmental metrics are nearing critical agronomic stress thresholds for this crop stage.'}
-          </p>
-        )}
+      {/* Summary Banner */}
+      <div className={`p-4 rounded-xl border-2 text-sm sm:text-base font-bold leading-relaxed shadow-sm ${s.bg} ${s.border} ${s.text}`}>
+        {level === 'LOW' ? tx.allGood : tx.nearLimit}
       </div>
 
-      {/* Triggered Factors Breakdown */}
-      <div className="space-y-2 pt-1">
-        <span className="text-[11px] font-semibold text-[#576258] uppercase tracking-wider block font-display">
-          {language === 'hi' ? 'मूल्यांकित नियम (ICAR-CICR)' : 'Rule Evaluations (ICAR-CICR)'}
+      {/* Factors List */}
+      <div className="space-y-3">
+        <span className="text-xs sm:text-sm font-extrabold text-[#5C4A30] uppercase tracking-wide block">
+          {tx.rules}
         </span>
-
         {factors.length === 0 ? (
-          <div className="flex items-center space-x-2 text-xs text-[#276738] p-2.5 rounded bg-[#EDF6EF] border border-[#276738]/20">
-            <ShieldCheck className="w-4 h-4 text-[#276738] flex-shrink-0" />
-            <span className="font-medium">
-              {language === 'hi'
-                ? 'सभी 5 पर्यावरणीय सीमाएं सामान्य स्थिति में हैं।'
-                : 'All 5 agronomic threshold rules verified nominal.'}
-            </span>
+          <div className="flex items-center gap-2.5 text-sm sm:text-base font-bold text-green-950 p-4 rounded-xl bg-green-50 border border-green-200">
+            <ShieldCheck className="w-5 h-5 text-[#3A7D44] flex-shrink-0" />
+            <span>{tx.allGood}</span>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {factors.map((f: any, idx: number) => (
-              <div key={idx} className="p-3 rounded border border-[#E3DDD1] bg-[#FFFFFF] text-xs space-y-1">
+              <div key={idx} className="p-4 rounded-xl border-2 border-[#E8C99A] bg-[#FEFADC] text-sm space-y-1.5 shadow-sm">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-[#1A211B] flex items-center space-x-1.5">
-                    <AlertCircle className="w-3.5 h-3.5 text-[#995A1E]" />
-                    <span>{f.factor_name || f.rule_name || 'Agronomic Parameter'}</span>
+                  <span className="font-extrabold text-base text-[#241909] flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-[#E07B39]" />
+                    {f.factor_name || f.rule_name || (isHi ? 'कृषि मानक' : 'Agronomic Factor')}
                   </span>
-                  <span className="text-[10px] font-mono font-medium text-[#576258] uppercase">
-                    {f.severity || 'Caution'}
+                  <span className="text-xs font-black px-2.5 py-0.5 rounded-lg bg-orange-100 text-[#E07B39] border border-orange-200 uppercase">
+                    {f.severity || 'CAUTION'}
                   </span>
                 </div>
-                <p className="text-[#576258] pl-5">{f.description || f.advisory_text}</p>
+                <p className="text-[#5C4A30] pl-6 text-xs sm:text-sm font-medium leading-relaxed">
+                  {f.description || f.advisory_text}
+                </p>
                 {f.threshold_breach && (
-                  <span className="ml-5 font-mono text-[11px] text-[#1E472D] block">
-                    Observed: {f.threshold_breach}
+                  <span className="ml-6 font-mono text-xs font-bold text-[#1E472D] block">
+                    {tx.observed} {f.threshold_breach}
                   </span>
                 )}
               </div>

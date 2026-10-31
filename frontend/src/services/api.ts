@@ -9,11 +9,21 @@ export const apiClient = axios.create({
   },
 });
 
+export interface CropData {
+  id?: string;
+  name: string;
+  hindi_name: string;
+  variety?: string;
+  sowing_date: string;
+  status?: string;
+}
+
 export interface FarmerProfileData {
   user_id: string;
   full_name: string;
   phone_number: string;
   preferred_language: string;
+  has_password?: boolean;
   location: {
     state: string;
     district: string;
@@ -27,13 +37,31 @@ export interface FarmerProfileData {
     soil_type: string;
     irrigation_source: string;
   };
-  crop: {
-    name: string;
-    hindi_name: string;
-    sowing_date: string;
-    status: string;
-  };
+  crops: CropData[];
+  crop: CropData;
 }
+
+export const loginFarmer = async (phoneNumber: string, password: string): Promise<FarmerProfileData> => {
+  const res = await apiClient.post('/api/farmers/login', {
+    phone_number: phoneNumber,
+    password: password,
+  });
+  return res.data;
+};
+
+export const registerFarmer = async (payload: any): Promise<FarmerProfileData> => {
+  const res = await apiClient.post('/api/farmers/register', payload);
+  return res.data;
+};
+
+export const addFarmerCrop = async (userId: string, cropData: {
+  crop_name: string;
+  variety_name?: string;
+  sowing_date: string;
+}): Promise<FarmerProfileData> => {
+  const res = await apiClient.post(`/api/farmers/${userId}/add-crop`, cropData);
+  return res.data;
+};
 
 export const fetchFarmerProfile = async (phoneNumber: string): Promise<FarmerProfileData> => {
   const res = await apiClient.get(`/api/farmers/${phoneNumber}`);

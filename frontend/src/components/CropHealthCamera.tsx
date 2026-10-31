@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { analyzeCropPhoto } from '../services/api';
-import { Camera, Upload, AlertTriangle } from 'lucide-react';
-import { FarmarianMascot } from './FarmarianMascot';
+import { Camera, Upload, AlertCircle, CheckCircle2, Sparkles, RefreshCw } from 'lucide-react';
 
 interface CropHealthCameraProps {
   language: string;
@@ -9,11 +8,49 @@ interface CropHealthCameraProps {
   location: string;
 }
 
+const t = {
+  en: {
+    title: 'Crop Disease & Pest Clinic',
+    subtitle: 'Multimodal Vision Diagnostic powered by Gemini 3.5 & ICAR Protocols',
+    dropzoneTitle: 'Upload or Capture Plant Photo',
+    dropzoneSub: 'Leaves, flowers, bolls or stem (JPG, PNG up to 10MB)',
+    changePhoto: 'Change Photo',
+    presets: 'Test Specimens:',
+    analyzeBtn: 'Diagnose Plant Disease',
+    analyzingBtn: 'Analyzing Specimen with Gemini Vision...',
+    observedTitle: 'Observed Symptoms:',
+    protocolTitle: 'Recommended ICAR Protocol:',
+    disclaimer: 'AI visual diagnosis is an advisory tool. Consult your local Krishi Vigyan Kendra (KVK) for confirmation before applying heavy chemicals.',
+    placeholderPrompt: 'Take a photo of diseased crop leaves or choose a test sample above to inspect health.',
+    errorMsg: 'Inspection failed. Please verify API connection or try another photo.',
+    match: 'Match Confidence',
+  },
+  hi: {
+    title: 'फसल रोग व कीट पहचान (पादप क्लिनिक)',
+    subtitle: 'जेमिनी विजन AI और ICAR कृषि पद्धतियों पर आधारित फोटो जांच',
+    dropzoneTitle: 'पौधे, पत्ती या फल की फोटो अपलोड करें',
+    dropzoneSub: 'पत्ती, फूल या तने की साफ फोटो (JPG, PNG)',
+    changePhoto: 'फोटो बदलें',
+    presets: 'नमूना फोटो:',
+    analyzeBtn: 'रोग व उपचार की जांच करें',
+    analyzingBtn: 'फोटो का विश्लेषण हो रहा है...',
+    observedTitle: 'दिखाई देने वाले लक्षण:',
+    protocolTitle: 'संस्तुत ICAR उपचार व रोकथाम:',
+    disclaimer: 'यह AI आधारित दृश्य सहायता है। कोई भी महंगी दवा खरीदने से पहले नजदीकी कृषि विज्ञान केंद्र (KVK) से पुष्टि कर लें।',
+    placeholderPrompt: 'रोगग्रस्त पत्ती या पौधे की फोटो लें या ऊपर दिए गए नमूनों से जांच करें।',
+    errorMsg: 'चित्र विश्लेषण में समस्या हुई। कृपया दोबारा कोशिश करें।',
+    match: 'विश्वसनीयता',
+  },
+};
+
 export const CropHealthCamera: React.FC<CropHealthCameraProps> = ({
   language,
   cropName,
   location,
 }) => {
+  const isHi = language === 'hi';
+  const tx = isHi ? t.hi : t.en;
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -42,7 +79,7 @@ export const CropHealthCamera: React.FC<CropHealthCameraProps> = ({
       const result = await analyzeCropPhoto(formData);
       setAnalysisResult(result);
     } catch (err: any) {
-      alert(language === 'hi' ? 'चित्र विश्लेषण में त्रुटि हुई। कृपया पुनः प्रयास करें।' : 'Pathology inspection failed. Please verify API connection.');
+      alert(tx.errorMsg);
     } finally {
       setIsAnalyzing(false);
     }
@@ -56,12 +93,12 @@ export const CropHealthCamera: React.FC<CropHealthCameraProps> = ({
     if (ctx) {
       ctx.fillStyle = type === 'bollworm' ? '#2F4F2F' : '#6A543A';
       ctx.fillRect(0, 0, 400, 400);
-      ctx.fillStyle = '#F8F7F4';
-      ctx.font = 'bold 18px sans-serif';
-      ctx.fillText(type === 'bollworm' ? 'Cotton Specimen' : 'Wheat Stem', 40, 200);
-      ctx.fillStyle = '#C27847';
+      ctx.fillStyle = '#FEFADC';
+      ctx.font = 'bold 22px sans-serif';
+      ctx.fillText(type === 'bollworm' ? 'Cotton Boll Specimen' : 'Wheat Leaf Specimen', 30, 200);
+      ctx.fillStyle = '#E07B39';
       ctx.beginPath();
-      ctx.arc(200, 250, 36, 0, 2 * Math.PI);
+      ctx.arc(200, 260, 40, 0, 2 * Math.PI);
       ctx.fill();
     }
     canvas.toBlob((blob) => {
@@ -75,38 +112,43 @@ export const CropHealthCamera: React.FC<CropHealthCameraProps> = ({
   };
 
   return (
-    <div className="matte-panel p-6 space-y-6">
+    <div className="agro-card p-6 sm:p-8 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-[#E3DDD1] pb-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E8C99A] pb-4">
         <div>
-          <h3 className="text-sm font-semibold text-[#1A211B] font-display flex items-center space-x-2">
-            <Camera className="w-4 h-4 text-[#1E472D]" />
-            <span>{language === 'hi' ? 'पादप रोग एवं कीट लक्षण जांच' : 'Crop Pathology & Symptom Clinic'}</span>
-          </h3>
-          <p className="text-[11px] text-[#576258] mt-0.5">
-            Gemini 3.5 Multimodal Visual Diagnostics • Plant Specimen Analysis
-          </p>
+          <h2 className="text-xl sm:text-2xl font-extrabold text-[#241909] flex items-center gap-2.5">
+            <Camera className="w-6 h-6 text-[#E07B39]" />
+            <span>{tx.title}</span>
+          </h2>
+          <p className="text-sm font-semibold text-[#5C4A30] mt-1">{tx.subtitle}</p>
         </div>
-        <span className="text-[11px] font-mono text-[#576258] bg-[#F8F7F4] border border-[#E3DDD1] px-2 py-0.5 rounded">
-          Vision API
+        <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-[#FEFADC] text-[#241909] border border-[#E8C99A] self-start sm:self-auto">
+          {cropName}
         </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-        {/* Specimen Dropzone */}
-        <div className="space-y-3">
-          <div className="border border-dashed border-[#CFC5B4] hover:border-[#1E472D] rounded p-6 text-center bg-[#F8F7F4] transition cursor-pointer relative flex flex-col items-center justify-center min-h-[220px]">
+        {/* Specimen Upload Dropzone */}
+        <div className="space-y-4">
+          <div className="border-2 border-dashed border-[#E8C99A] hover:border-[#241909] rounded-2xl p-6 text-center bg-[#FEFADC] transition cursor-pointer relative flex flex-col items-center justify-center min-h-[240px] shadow-inner">
             {previewUrl ? (
-              <div className="w-full h-48 rounded overflow-hidden">
-                <img src={previewUrl} alt="Specimen" className="w-full h-full object-cover" />
+              <div className="w-full h-56 rounded-xl overflow-hidden relative">
+                <img src={previewUrl} alt="Plant specimen" className="w-full h-full object-cover" />
+                <span className="absolute bottom-2 right-2 px-3 py-1 rounded-lg bg-[#241909]/80 text-[#FEFADC] text-xs font-bold backdrop-blur-sm">
+                  {tx.changePhoto}
+                </span>
               </div>
             ) : (
-              <div className="space-y-2">
-                <Upload className="w-6 h-6 text-[#576258] mx-auto" />
-                <span className="text-xs font-medium text-[#1A211B] block">
-                  Select or capture specimen image
+              <div className="space-y-2.5 py-4">
+                <div className="w-12 h-12 rounded-2xl bg-[#F6D4BA] text-[#241909] flex items-center justify-center mx-auto border border-[#E8C99A]">
+                  <Upload className="w-6 h-6 text-[#E07B39]" />
+                </div>
+                <span className="text-base font-extrabold text-[#241909] block">
+                  {tx.dropzoneTitle}
                 </span>
-                <span className="text-[10px] text-[#859286] block">JPG, PNG up to 10MB</span>
+                <span className="text-xs font-semibold text-[#5C4A30] block">
+                  {tx.dropzoneSub}
+                </span>
               </div>
             )}
             <input
@@ -117,20 +159,23 @@ export const CropHealthCamera: React.FC<CropHealthCameraProps> = ({
             />
           </div>
 
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-[11px] text-[#576258]">Evaluation presets:</span>
-            <div className="flex space-x-2">
+          {/* Quick Test Samples */}
+          <div className="flex flex-wrap items-center justify-between text-xs gap-2">
+            <span className="font-extrabold text-[#5C4A30]">{tx.presets}</span>
+            <div className="flex gap-2">
               <button
+                type="button"
                 onClick={() => loadDemoSpecimen('bollworm')}
-                className="text-[11px] px-2 py-1 rounded border border-[#E3DDD1] bg-[#FFFFFF] hover:bg-[#F8F7F4] text-[#1A211B]"
+                className="px-3 py-1.5 rounded-xl border border-[#E8C99A] bg-[#FEFADC] hover:bg-[#F3B391] text-[#241909] font-bold transition-all shadow-sm"
               >
-                Pink Bollworm
+                {isHi ? 'गुलाबी सुंडी (कपास)' : 'Pink Bollworm (Cotton)'}
               </button>
               <button
+                type="button"
                 onClick={() => loadDemoSpecimen('rust')}
-                className="text-[11px] px-2 py-1 rounded border border-[#E3DDD1] bg-[#FFFFFF] hover:bg-[#F8F7F4] text-[#1A211B]"
+                className="px-3 py-1.5 rounded-xl border border-[#E8C99A] bg-[#FEFADC] hover:bg-[#F3B391] text-[#241909] font-bold transition-all shadow-sm"
               >
-                Yellow Rust
+                {isHi ? 'पीला रतुआ (गेहूं)' : 'Yellow Rust (Wheat)'}
               </button>
             </div>
           </div>
@@ -138,54 +183,69 @@ export const CropHealthCamera: React.FC<CropHealthCameraProps> = ({
           <button
             onClick={handleUploadAndAnalyze}
             disabled={!selectedFile || isAnalyzing}
-            className="w-full btn-primary disabled:opacity-40 py-2.5 text-xs font-semibold"
+            className="w-full btn-primary disabled:opacity-40 py-3.5 text-base font-extrabold flex items-center justify-center gap-2 shadow-md"
           >
-            {isAnalyzing ? 'Inspecting Pathology via Gemini...' : 'Run Symptom Diagnostic'}
+            {isAnalyzing ? (
+              <>
+                <RefreshCw className="w-5 h-5 animate-spin" />
+                <span>{tx.analyzingBtn}</span>
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-5 h-5" />
+                <span>{tx.analyzeBtn}</span>
+              </>
+            )}
           </button>
         </div>
 
-        {/* Pathology Output */}
-        <div className="space-y-3">
+        {/* Diagnosis Results Card */}
+        <div>
           {analysisResult ? (
-            <div className="border border-[#E3DDD1] rounded p-4 bg-[#FFFFFF] space-y-3 text-xs">
-              <div className="flex justify-between items-baseline border-b border-[#E3DDD1] pb-2">
-                <span className="font-semibold text-sm text-[#1A211B]">
-                  {analysisResult.diagnosis || 'Suspected Pink Bollworm (Pectinophora gossypiella)'}
-                </span>
-                <span className="text-[11px] font-mono text-[#276738] font-medium">
-                  {Math.round((analysisResult.confidence_score || 0.88) * 100)}% Match
+            <div className="border-2 border-[#E8C99A] rounded-2xl p-6 bg-[#FEFADC] space-y-4 shadow-sm">
+              <div className="flex justify-between items-start border-b border-[#E8C99A] pb-3 gap-2">
+                <div>
+                  <span className="text-xs font-bold text-[#5C4A30] uppercase tracking-wide block">
+                    {isHi ? 'पहचाना गया रोग / कीट:' : 'Identified Pathology:'}
+                  </span>
+                  <h3 className="font-extrabold text-xl text-[#241909] mt-0.5">
+                    {analysisResult.diagnosis || 'Pink Bollworm Infestation'}
+                  </h3>
+                </div>
+                <span className="text-xs font-extrabold px-3 py-1.5 rounded-full bg-green-100 text-green-800 border border-green-300 flex-shrink-0">
+                  {Math.round((analysisResult.confidence_score || 0.88) * 100)}% {tx.match}
                 </span>
               </div>
 
               <div>
-                <span className="font-semibold text-[11px] text-[#576258] uppercase tracking-wider block font-display mb-1">
-                  Observed Symptoms:
+                <span className="text-xs font-extrabold text-[#5C4A30] uppercase tracking-wide block mb-1">
+                  {tx.observedTitle}
                 </span>
-                <p className="text-[#1A211B] leading-relaxed bg-[#F8F7F4] p-2.5 rounded border border-[#E3DDD1]">
-                  {analysisResult.symptoms || 'Rosetted flower petals, boreholes sealed with frass.'}
+                <p className="text-sm font-semibold text-[#241909] leading-relaxed bg-[#FFFDF5] p-3.5 rounded-xl border border-[#E8C99A]">
+                  {analysisResult.symptoms || (isHi ? 'पत्तियों में सुराख व कलियों में मरोड़।' : 'Visible leaf spotting and rosetted blooms.')}
                 </p>
               </div>
 
               <div>
-                <span className="font-semibold text-[11px] text-[#576258] uppercase tracking-wider block font-display mb-1">
-                  ICAR Prescribed Protocol:
+                <span className="text-xs font-extrabold text-[#5C4A30] uppercase tracking-wide block mb-1">
+                  {tx.protocolTitle}
                 </span>
-                <p className="text-[#1A211B] leading-relaxed bg-[#EBF3EC] p-2.5 rounded border border-[#1E472D]/20">
-                  {analysisResult.recommended_action || 'Deploy pheromone traps @ 5/ha. If ETL crosses 10%, apply Emamectin Benzoate 5% SG @ 5g/10L water.'}
+                <p className="text-sm font-bold text-[#1E472D] leading-relaxed bg-[#EDF6EF] p-3.5 rounded-xl border border-[#276738]/30">
+                  {analysisResult.recommended_action || (isHi ? '5 फेरोमोन ट्रैप प्रति एकड़ लगाएं। नीम का तेल (1500 ppm) 2.5 मिली प्रति लीटर पानी में मिलाकर छिड़कें।' : 'Deploy 5 pheromone traps per acre. Apply 5% NSKE or Neem oil formulation.')}
                 </p>
               </div>
 
-              <div className="flex items-start space-x-2 text-[11px] text-[#995A1E] bg-[#FBF2E9] p-2.5 rounded border border-[#995A1E]/20">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                <p>
-                  Visual inspection is an AI decision aid. Confirm diagnosis with your local Krishi Vigyan Kendra before purchasing chemicals.
-                </p>
+              <div className="flex items-start space-x-2 text-xs font-semibold text-[#995A1E] bg-[#FBF2E9] p-3 rounded-xl border border-[#995A1E]/30">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <p>{tx.disclaimer}</p>
               </div>
             </div>
           ) : (
-            <div className="border border-dashed border-[#E3DDD1] rounded p-8 text-center bg-[#F8F7F4] text-xs text-[#576258] min-h-[220px] flex flex-col items-center justify-center space-y-2">
-              <FarmarianMascot state="welcoming" size={32} />
-              <p>Upload a plant photo or choose an evaluation preset to run vision analysis.</p>
+            <div className="border-2 border-dashed border-[#E8C99A] rounded-2xl p-8 text-center bg-[#FEFADC] min-h-[240px] flex flex-col items-center justify-center space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-[#F6D4BA] text-[#241909] flex items-center justify-center border border-[#E8C99A]">
+                <Camera className="w-6 h-6 text-[#E07B39]" />
+              </div>
+              <p className="text-sm font-bold text-[#5C4A30] max-w-xs">{tx.placeholderPrompt}</p>
             </div>
           )}
         </div>

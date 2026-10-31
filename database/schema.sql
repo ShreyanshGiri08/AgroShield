@@ -27,6 +27,7 @@ $$ LANGUAGE plpgsql;
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     phone_number VARCHAR(15) UNIQUE NOT NULL,
+    password_hash VARCHAR(255),
     full_name VARCHAR(100) NOT NULL,
     preferred_language VARCHAR(10) DEFAULT 'hi', -- 'hi', 'en', 'mr', 'gu', etc.
     is_active BOOLEAN DEFAULT TRUE,

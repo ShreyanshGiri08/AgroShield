@@ -6,15 +6,17 @@ import React, {
   useCallback,
   type ReactNode,
 } from 'react';
-import type { FarmerProfileData } from '../services/api';
+import type { FarmerProfileData, CropData } from '../services/api';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type { FarmerProfileData };
+export type { FarmerProfileData, CropData };
 
 export interface FarmerContextType {
   farmer: FarmerProfileData | null;
   language: string;
+  activeCrop: CropData | null;
+  setActiveCrop: (crop: CropData) => void;
   setLanguage: (lang: string) => void;
   setFarmer: (farmer: FarmerProfileData | null) => void;
   logout: () => void;
@@ -59,6 +61,26 @@ export const FarmerProvider: React.FC<FarmerProviderProps> = ({ children }) => {
     }
   });
 
+  // Track the active crop currently being viewed (defaults to first crop)
+  const [activeCrop, setActiveCropState] = useState<CropData | null>(() => {
+    if (farmer?.crop) return farmer.crop;
+    if (farmer?.crops && farmer.crops.length > 0) return farmer.crops[0];
+    return null;
+  });
+
+  // Whenever farmer changes, sync active crop
+  useEffect(() => {
+    if (farmer) {
+      if (farmer.crop) {
+        setActiveCropState(farmer.crop);
+      } else if (farmer.crops && farmer.crops.length > 0) {
+        setActiveCropState(farmer.crops[0]);
+      }
+    } else {
+      setActiveCropState(null);
+    }
+  }, [farmer]);
+
   // ── Sync farmer → localStorage whenever it changes ────────────────────────
   useEffect(() => {
     if (farmer) {
@@ -85,10 +107,18 @@ export const FarmerProvider: React.FC<FarmerProviderProps> = ({ children }) => {
 
   const setFarmer = useCallback((data: FarmerProfileData | null) => {
     setFarmerState(data);
-    // Sync language preference from profile when logging in
     if (data?.preferred_language) {
       setLanguageState(data.preferred_language);
     }
+    if (data?.crop) {
+      setActiveCropState(data.crop);
+    } else if (data?.crops && data.crops.length > 0) {
+      setActiveCropState(data.crops[0]);
+    }
+  }, []);
+
+  const setActiveCrop = useCallback((crop: CropData) => {
+    setActiveCropState(crop);
   }, []);
 
   const setLanguage = useCallback((lang: string) => {
@@ -97,19 +127,17 @@ export const FarmerProvider: React.FC<FarmerProviderProps> = ({ children }) => {
 
   const logout = useCallback(() => {
     setFarmerState(null);
+    setActiveCropState(null);
     localStorage.removeItem(STORAGE_KEY);
-    // Keep language preference after logout
   }, []);
 
-  // ── Derived state ─────────────────────────────────────────────────────────
-
   const isLoggedIn = farmer !== null;
-
-  // ── Context value ─────────────────────────────────────────────────────────
 
   const value: FarmerContextType = {
     farmer,
     language,
+    activeCrop,
+    setActiveCrop,
     setLanguage,
     setFarmer,
     logout,
