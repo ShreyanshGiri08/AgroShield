@@ -69,3 +69,4 @@ async def run_diagnostics():
 
 if __name__ == "__main__":
     asyncio.run(run_diagnostics())
+

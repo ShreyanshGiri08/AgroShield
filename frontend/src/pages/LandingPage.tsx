@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Sparkles,
   ArrowRight,
@@ -8,6 +8,10 @@ import {
   CheckCircle2,
   Leaf,
   SunMedium,
+  TrendingUp,
+  ShieldCheck,
+  Activity,
+  Cpu,
 } from 'lucide-react';
 
 interface LandingPageProps {
@@ -36,6 +40,7 @@ const t = {
     ctaPrimary: 'Launch Farmer Portal',
     ctaDemo: '1-Click Interactive Demo',
     ctaExplore: 'Explore Live Mandi Radar',
+    physicsHint: 'Hover or drag cursor across floating telemetry objects to experience Zero-G proximity repulsion & 3D tilt',
     stats: [
       { label: 'Real-Time Telemetry', val: '100% Live', sub: 'Open-Meteo & data.gov.in' },
       { label: 'Agronomic Research', val: 'ICAR RAG', sub: 'Verified package of practices' },
@@ -99,20 +104,21 @@ const t = {
     ctaPrimary: 'किसान पोर्टल शुरू करें',
     ctaDemo: '1-क्लिक सीधा डेमो देखें',
     ctaExplore: 'सजीव मंडी भाव देखें',
+    physicsHint: 'माउस को कार्ड्स के पास ले जाएं: जीरो-ग्रेविटी रिपल्शन और 3D टिल्ट का अनुभव करें',
     stats: [
-      { label: 'सजीव सरकारी डेटा', val: '100% असली', sub: 'Open-Meteo व data.gov.in' },
-      { label: 'वैज्ञानिक अनुसंधान', val: 'ICAR RAG', sub: 'प्रमाणित पैकेज ऑफ प्रैक्टिसेज' },
-      { label: 'भाव पूर्वानुमान', val: '14 दिन', sub: 'MSP व मौसमी आवक विश्लेषण' },
-      { label: 'बहु-फसली सहायता', val: '10+ फसलें', sub: 'कपास, गेहूं, सोयाबीन आदि' },
+      { label: 'सजीव मौसम डेटा', val: '100% लाइव', sub: 'Open-Meteo व उपग्रह' },
+      { label: 'सरकारी कृषि अनुसंधान', val: 'ICAR RAG', sub: 'प्रमाणित कृषि बुलेटिन' },
+      { label: 'भाव पूर्वानुमान', val: '14 दिन', sub: 'MSP आधार व आवक' },
+      { label: 'बहु-फसल सुरक्षा', val: '10+ फसलें', sub: 'कपास, गेहूं, सोयाबीन आदि' },
     ],
-    bentoTitle: 'भारतीय किसानों के लिए विशेष रूप से निर्मित',
-    bentoSub: 'सटीक, प्रामाणिक और वैज्ञानिक कृषि निर्णय प्रणाली जो हर एकड़ की रक्षा करती है।',
+    bentoTitle: 'भारत के 14 करोड़ किसानों के लिए निर्मित',
+    bentoSub: 'सटीक, भरोसेमंद और वैज्ञानिक पद्धतियों पर आधारित आधुनिक कृषि सुरक्षा प्रणाली।',
     pillars: [
       {
         icon: CloudRain,
-        tag: 'सजीव उपग्रह मौसम',
+        tag: 'स्थानीय मौसम',
         title: 'फसल अवस्था आधारित मौसम जोखिम',
-        desc: 'वर्षा, अधिक तापमान और नमी का फसल की अवस्था (अंकुरण, फूल, दाना भराव) के अनुसार स्वचालित वैज्ञानिक विश्लेषण।',
+        desc: 'अंकुरण, फूल आने और गूलर/दाने भरने की अवस्था में तापमान, नमी और बारिश के वास्तविक असर का सटीक गणितीय विश्लेषण।',
       },
       {
         icon: Scale,
@@ -158,6 +164,150 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 }) => {
   const isHi = language === 'hi';
   const tx = isHi ? t.hi : t.en;
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // ZERO-GRAVITY INTERACTIVE PHYSICS ENGINE (VitAI Style: Weightless Precision)
+  // ─────────────────────────────────────────────────────────────────────────────
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: -1000, y: -1000 });
+  const [clickedCard, setClickedCard] = useState<string | null>(null);
+
+  // Floating cards state
+  const card1Ref = useRef<HTMLDivElement>(null);
+  const card2Ref = useRef<HTMLDivElement>(null);
+  const card3Ref = useRef<HTMLDivElement>(null);
+  const card4Ref = useRef<HTMLDivElement>(null);
+
+  // Physics animation loop using refs for 60fps buttery glide
+  const physicsState = useRef({
+    c1: { x: 0, y: 0, vx: 0, vy: 0, tiltX: 0, tiltY: 0, z: -10 },
+    c2: { x: 0, y: 0, vx: 0, vy: 0, tiltX: 0, tiltY: 0, z: -15 },
+    c3: { x: 0, y: 0, vx: 0, vy: 0, tiltX: 0, tiltY: 0, z: -5 },
+    c4: { x: 0, y: 0, vx: 0, vy: 0, tiltX: 0, tiltY: 0, z: -8 },
+    lastScrollY: 0,
+    scrollVelocity: 0,
+  });
+
+  // Track pointer coordinates relative to hero container
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    setMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setMousePos({ x: -1000, y: -1000 });
+  };
+
+  // Scroll momentum tracking
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const delta = currentScrollY - physicsState.current.lastScrollY;
+      physicsState.current.scrollVelocity = Math.max(Math.min(delta * 0.4, 25), -25);
+      physicsState.current.lastScrollY = currentScrollY;
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Continuous Zero-G loop with Brownian drift, Proximity repulsion, & Damped Spring-Back
+  useEffect(() => {
+    let animId: number;
+    let t = 0;
+
+    const repulsionRadius = 180; // Repulsor sphere radius
+    const damping = 0.88; // High linear damping for cushioned glide
+    const angularDamping = 0.82;
+    const springK = 0.08; // Tether spring constant
+
+    const cards = [
+      { id: 'c1', ref: card1Ref, driftFreq: 0.0016, driftAmp: 8 },
+      { id: 'c2', ref: card2Ref, driftFreq: 0.0013, driftAmp: 11 },
+      { id: 'c3', ref: card3Ref, driftFreq: 0.0019, driftAmp: 7 },
+      { id: 'c4', ref: card4Ref, driftFreq: 0.0014, driftAmp: 9 },
+    ];
+
+    const updatePhysics = () => {
+      t += 16;
+      const scrollImpulse = physicsState.current.scrollVelocity;
+      // Decay scroll velocity
+      physicsState.current.scrollVelocity *= 0.92;
+
+      cards.forEach(({ id, ref, driftFreq, driftAmp }) => {
+        const el = ref.current;
+        if (!el || !containerRef.current) return;
+
+        const state = (physicsState.current as any)[id];
+        const rect = el.getBoundingClientRect();
+        const containerRect = containerRef.current.getBoundingClientRect();
+
+        // Card center relative to hero container
+        const cardCenterX = rect.left + rect.width / 2 - containerRect.left;
+        const cardCenterY = rect.top + rect.height / 2 - containerRect.top;
+
+        // 1. Subtle continuous Brownian drift
+        const brownianX = Math.sin(t * driftFreq) * driftAmp;
+        const brownianY = Math.cos(t * driftFreq * 1.2) * (driftAmp * 0.7);
+
+        // 2. Proximity Repulsion Sphere
+        const dx = cardCenterX - mousePos.x;
+        const dy = cardCenterY - mousePos.y;
+        const dist = Math.hypot(dx, dy);
+
+        let repulseX = 0;
+        let repulseY = 0;
+        if (dist > 0 && dist < repulsionRadius) {
+          const factor = (1 - dist / repulsionRadius);
+          const force = factor * 4.5;
+          repulseX = (dx / dist) * force;
+          repulseY = (dy / dist) * force;
+        }
+
+        // 3. Spring force returning to anchor position (0, 0)
+        const springFx = -springK * state.x;
+        const springFy = -springK * state.y;
+
+        // Apply accelerations
+        state.vx = (state.vx + repulseX + springFx) * damping;
+        state.vy = (state.vy + repulseY + springFy + scrollImpulse * 0.05) * damping;
+
+        state.x += state.vx;
+        state.y += state.vy;
+
+        // 4. Parallax 3D tilt tracking pointer coordinates (±8°)
+        let targetTiltX = 0;
+        let targetTiltY = 0;
+        if (mousePos.x > 0 && dist < 450) {
+          targetTiltX = Math.max(Math.min((dy / 450) * 8, 8), -8);
+          targetTiltY = Math.max(Math.min((-dx / 450) * 8, 8), -8);
+        }
+        state.tiltX += (targetTiltX - state.tiltX) * (1 - angularDamping);
+        state.tiltY += (targetTiltY - state.tiltY) * (1 - angularDamping);
+
+        // Apply final transform
+        const finalX = state.x + brownianX;
+        const finalY = state.y + brownianY;
+        const zSpread = scrollImpulse !== 0 ? Math.abs(scrollImpulse) * 0.8 : 0;
+
+        el.style.transform = `translate3d(${finalX.toFixed(2)}px, ${finalY.toFixed(2)}px, ${(state.z + zSpread).toFixed(2)}px) rotateX(${state.tiltX.toFixed(2)}deg) rotateY(${state.tiltY.toFixed(2)}deg)`;
+      });
+
+      animId = requestAnimationFrame(updatePhysics);
+    };
+
+    animId = requestAnimationFrame(updatePhysics);
+    return () => cancelAnimationFrame(animId);
+  }, [mousePos]);
+
+  // Card click micro-interaction (scale punch 0.96 and rebound)
+  const handleCardClick = (id: string) => {
+    setClickedCard(id);
+    setTimeout(() => setClickedCard(null), 250);
+  };
 
   return (
     <div className="min-h-screen text-[#0F1108] font-sans flex flex-col" style={{ backgroundColor: '#FEFADC' }}>
@@ -242,9 +392,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </div>
       </header>
 
-      {/* ─── HERO SECTION (VitAI Style Headline + Glowing Pill) ─── */}
-      <section id="overview" className="relative pt-12 pb-20 overflow-hidden">
-        <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
+      {/* ─── ZERO-G INTERACTIVE HERO CANVAS (VitAI Concept: Weightless Precision) ─── */}
+      <section
+        id="overview"
+        ref={containerRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        className="relative pt-12 pb-24 overflow-hidden perspective-[1200px]"
+      >
+        {/* Subtle Zero-G Ambient Physics Guidance */}
+        <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-4xl mx-auto space-y-6">
             {/* High-Impact Announcement Pill */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FFFDF5] border border-[#E8C99A] shadow-sm">
@@ -304,8 +461,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </a>
             </div>
 
+            {/* Physics Interaction Hint Pill */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F6D4BA]/60 border border-[#E8C99A] text-[11px] font-bold text-[#5C4A30] mt-3">
+              <Activity className="w-3.5 h-3.5 text-[#E07B39] animate-spin" style={{ animationDuration: '6s' }} />
+              <span>{tx.physicsHint}</span>
+            </div>
+
             {/* 4 Stats Badges Bar */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-10 text-left">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 text-left">
               {tx.stats.map((st, idx) => (
                 <div key={idx} className="bg-[#FFFDF5] border-2 border-[#E8C99A] rounded-2xl p-5 shadow-sm">
                   <span className="text-xs font-black text-[#5C4A30] uppercase tracking-wider block mb-1">
@@ -322,57 +485,157 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </div>
           </div>
 
-          {/* ─── FLOATING BENTO APP PREVIEW CARD (VitAI Style Showcase) ─── */}
-          <div className="mt-14 max-w-5xl mx-auto rounded-3xl bg-[#F6D4BA] border-2 border-[#E8C99A] p-4 sm:p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-[#E8C99A] pb-3 px-2">
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-red-400" />
-                <span className="w-3 h-3 rounded-full bg-yellow-400" />
-                <span className="w-3 h-3 rounded-full bg-green-400" />
-                <span className="text-xs font-bold font-mono text-[#5C4A30] ml-2">
-                  agroshield.gov.in/telemetry/live-preview
+          {/* ─────────────────────────────────────────────────────────────────────────
+              ZERO-GRAVITY INTERACTIVE PREVIEW RIG (Anchor Plane + 4 Floating Satellites)
+             ───────────────────────────────────────────────────────────────────────── */}
+          <div className="mt-14 relative max-w-5xl mx-auto">
+            {/* FLOATING SATELLITE 1: Microclimate Telemetry Chip (Top Left Float) */}
+            <div
+              ref={card1Ref}
+              onClick={() => handleCardClick('c1')}
+              className={`hidden lg:block absolute -top-8 -left-12 z-30 w-72 bg-[#FFFDF5] border-2 border-[#E8C99A] rounded-2xl p-4 shadow-xl cursor-pointer select-none transition-transform duration-100 will-change-transform ${
+                clickedCard === 'c1' ? 'scale-95' : ''
+              }`}
+            >
+              <div className="flex items-center justify-between text-xs font-black text-[#5C4A30] border-b border-[#E8C99A] pb-2">
+                <span className="flex items-center gap-1.5 text-[#241909]">
+                  <SunMedium className="w-4 h-4 text-[#E07B39]" />
+                  <span>Open-Meteo Satellite</span>
                 </span>
+                <span className="px-2 py-0.5 rounded-md bg-[#3A7D44] text-[#FEFADC] text-[10px] font-extrabold">LIVE</span>
               </div>
-              <span className="text-xs font-extrabold px-3 py-1 rounded-full bg-[#FEFADC] text-[#241909] border border-[#E8C99A]">
-                100% Real Open-Meteo & AGMARKNET Feed
-              </span>
+              <div className="flex items-baseline justify-between pt-2">
+                <div className="text-2xl font-black font-mono text-[#241909]">31.4°C</div>
+                <div className="text-xs font-bold text-[#5C4A30]">Akola, MH</div>
+              </div>
+              <div className="text-[11px] font-semibold text-[#3A7D44] pt-1">
+                Humidity 58% • Rain 0.0 mm • Solar 680 W/m²
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Telemetry Card 1 */}
-              <div className="bg-[#FEFADC] rounded-2xl p-4 border border-[#E8C99A] space-y-2">
-                <div className="flex items-center justify-between text-xs font-bold text-[#5C4A30]">
-                  <span>{isHi ? 'सजीव मौसम (अकोला)' : 'Live Weather (Akola)'}</span>
-                  <SunMedium className="w-4 h-4 text-[#E07B39]" />
-                </div>
-                <div className="text-3xl font-black text-[#241909] font-mono">29.4°C</div>
-                <div className="text-xs text-[#3A7D44] font-bold">
-                  {isHi ? 'आर्द्रता: 48% • बारिश की संभावना: 0%' : 'Humidity: 48% • Rain Probability: 0%'}
-                </div>
-              </div>
-
-              {/* Telemetry Card 2 */}
-              <div className="bg-[#FEFADC] rounded-2xl p-4 border border-[#E8C99A] space-y-2">
-                <div className="flex items-center justify-between text-xs font-bold text-[#5C4A30]">
-                  <span>{isHi ? 'कपास मंडी भाव व पूर्वानुमान' : 'Cotton Mandi Radar'}</span>
+            {/* FLOATING SATELLITE 2: 14-Day Mandi Price Prediction Radar (Top Right Float) */}
+            <div
+              ref={card2Ref}
+              onClick={() => handleCardClick('c2')}
+              className={`hidden lg:block absolute -top-10 -right-12 z-30 w-80 bg-[#FFFDF5] border-2 border-[#E8C99A] rounded-2xl p-4 shadow-xl cursor-pointer select-none transition-transform duration-100 will-change-transform ${
+                clickedCard === 'c2' ? 'scale-95' : ''
+              }`}
+            >
+              <div className="flex items-center justify-between text-xs font-black text-[#5C4A30] border-b border-[#E8C99A] pb-2">
+                <span className="flex items-center gap-1.5 text-[#241909]">
                   <Scale className="w-4 h-4 text-[#E07B39]" />
-                </div>
-                <div className="text-3xl font-black text-[#1E472D] font-mono">₹7,560</div>
-                <div className="text-xs text-[#E07B39] font-black">
-                  {isHi ? '14 दिन अनुमान: ₹7,850 • रोककर रखें (HOLD)' : '14-Day Forecast: ₹7,850 • Recommendation: HOLD'}
+                  <span>data.gov.in AGMARKNET</span>
+                </span>
+                <span className="px-2 py-0.5 rounded-md bg-[#F3B391] text-[#241909] text-[10px] font-extrabold">14-DAY FORECAST</span>
+              </div>
+              <div className="flex items-baseline justify-between pt-2">
+                <div className="text-2xl font-black font-mono text-[#1E472D]">₹7,560<span className="text-xs font-bold text-[#5C4A30]">/qtl</span></div>
+                <div className="text-xs font-extrabold text-[#E07B39] flex items-center gap-0.5">
+                  <TrendingUp className="w-3.5 h-3.5" />
+                  <span>+3.8% Forecast</span>
                 </div>
               </div>
+              <div className="text-[11px] font-bold text-[#241909] pt-1 flex items-center justify-between">
+                <span>MSP: ₹7,121</span>
+                <span className="px-2 py-0.5 rounded-md bg-[#241909] text-[#FEFADC] text-[10px] font-black uppercase">ACTION: HOLD</span>
+              </div>
+            </div>
 
-              {/* Telemetry Card 3 */}
-              <div className="bg-[#FEFADC] rounded-2xl p-4 border border-[#E8C99A] space-y-2">
-                <div className="flex items-center justify-between text-xs font-bold text-[#5C4A30]">
-                  <span>{isHi ? 'ICAR अनुसंधान उद्धरण' : 'Verified ICAR Grounding'}</span>
-                  <CheckCircle2 className="w-4 h-4 text-[#3A7D44]" />
+            {/* FLOATING SATELLITE 3: ICAR Citation Verification Chip (Bottom Left Float) */}
+            <div
+              ref={card3Ref}
+              onClick={() => handleCardClick('c3')}
+              className={`hidden lg:block absolute -bottom-10 -left-10 z-30 w-76 bg-[#FFFDF5] border-2 border-[#E8C99A] rounded-2xl p-4 shadow-xl cursor-pointer select-none transition-transform duration-100 will-change-transform ${
+                clickedCard === 'c3' ? 'scale-95' : ''
+              }`}
+            >
+              <div className="flex items-center gap-2 text-xs font-black text-[#241909] border-b border-[#E8C99A] pb-2">
+                <ShieldCheck className="w-4 h-4 text-[#3A7D44]" />
+                <span>ICAR-CICR Bulletins (pgvector)</span>
+              </div>
+              <p className="text-xs font-bold text-[#241909] pt-2 line-clamp-2 leading-snug">
+                Technical Bulletin 2024: Integrated Pink Bollworm & Root Aeration Practices
+              </p>
+              <div className="text-[10px] font-extrabold text-[#3A7D44] pt-1">
+                92% Cosine Match • Zero Hallucinations
+              </div>
+            </div>
+
+            {/* FLOATING SATELLITE 4: Deterministic Phenology & Vision Pill (Bottom Right Float) */}
+            <div
+              ref={card4Ref}
+              onClick={() => handleCardClick('c4')}
+              className={`hidden lg:block absolute -bottom-8 -right-8 z-30 w-72 bg-[#FFFDF5] border-2 border-[#E8C99A] rounded-2xl p-4 shadow-xl cursor-pointer select-none transition-transform duration-100 will-change-transform ${
+                clickedCard === 'c4' ? 'scale-95' : ''
+              }`}
+            >
+              <div className="flex items-center justify-between text-xs font-black text-[#5C4A30] border-b border-[#E8C99A] pb-2">
+                <span className="flex items-center gap-1.5 text-[#241909]">
+                  <Cpu className="w-4 h-4 text-[#E07B39]" />
+                  <span>Deterministic Risk Engine</span>
+                </span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#3A7D44]" />
+              </div>
+              <div className="pt-2 text-xs font-black text-[#241909]">
+                Cotton • Flowering & Boll Formation
+              </div>
+              <div className="text-[11px] font-semibold text-[#5C4A30] pt-0.5">
+                Stress Score: <span className="font-black text-[#3A7D44]">18/100 (Safe)</span> • GDD Verified
+              </div>
+            </div>
+
+            {/* Central Anchor Plane (Z = 0) */}
+            <div className="rounded-3xl bg-[#F6D4BA] border-2 border-[#E8C99A] p-4 sm:p-6 shadow-2xl space-y-4">
+              <div className="flex items-center justify-between border-b border-[#E8C99A] pb-3 px-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-red-400" />
+                  <span className="w-3 h-3 rounded-full bg-yellow-400" />
+                  <span className="w-3 h-3 rounded-full bg-green-400" />
+                  <span className="text-xs font-bold font-mono text-[#5C4A30] ml-2">
+                    agroshield.gov.in/telemetry/live-preview
+                  </span>
                 </div>
-                <div className="text-xs font-extrabold text-[#241909] line-clamp-2">
-                  ICAR-CICR Technical Bulletin: Integrated Pest & Waterlogging Management
+                <span className="text-xs font-extrabold px-3 py-1 rounded-full bg-[#FEFADC] text-[#241909] border border-[#E8C99A]">
+                  100% Real Open-Meteo & AGMARKNET Feed
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Telemetry Card 1 */}
+                <div className="bg-[#FEFADC] rounded-2xl p-4 border border-[#E8C99A] space-y-2 shadow-sm">
+                  <div className="flex items-center justify-between text-xs font-bold text-[#5C4A30]">
+                    <span>{isHi ? 'सजीव मौसम (अकोला)' : 'Live Weather (Akola)'}</span>
+                    <SunMedium className="w-4 h-4 text-[#E07B39]" />
+                  </div>
+                  <div className="text-3xl font-black text-[#241909] font-mono">31.4°C</div>
+                  <div className="text-xs text-[#3A7D44] font-bold">
+                    {isHi ? 'आर्द्रता: 58% • बारिश की संभावना: 0%' : 'Humidity: 58% • Rain Probability: 0%'}
+                  </div>
                 </div>
-                <div className="text-xs text-[#3A7D44] font-bold">92% Semantic Match Score</div>
+
+                {/* Telemetry Card 2 */}
+                <div className="bg-[#FEFADC] rounded-2xl p-4 border border-[#E8C99A] space-y-2 shadow-sm">
+                  <div className="flex items-center justify-between text-xs font-bold text-[#5C4A30]">
+                    <span>{isHi ? 'कपास मंडी भाव व पूर्वानुमान' : 'Cotton Mandi Radar'}</span>
+                    <Scale className="w-4 h-4 text-[#E07B39]" />
+                  </div>
+                  <div className="text-3xl font-black text-[#1E472D] font-mono">₹7,560</div>
+                  <div className="text-xs text-[#E07B39] font-black">
+                    {isHi ? '14 दिन अनुमान: ₹7,850 • रोककर रखें (HOLD)' : '14-Day Forecast: ₹7,850 • Recommendation: HOLD'}
+                  </div>
+                </div>
+
+                {/* Telemetry Card 3 */}
+                <div className="bg-[#FEFADC] rounded-2xl p-4 border border-[#E8C99A] space-y-2 shadow-sm">
+                  <div className="flex items-center justify-between text-xs font-bold text-[#5C4A30]">
+                    <span>{isHi ? 'ICAR अनुसंधान उद्धरण' : 'Verified ICAR Grounding'}</span>
+                    <CheckCircle2 className="w-4 h-4 text-[#3A7D44]" />
+                  </div>
+                  <div className="text-xs font-extrabold text-[#241909] line-clamp-2">
+                    ICAR-CICR Technical Bulletin: Integrated Pest & Waterlogging Management
+                  </div>
+                  <div className="text-xs text-[#3A7D44] font-bold">92% Semantic Match Score</div>
+                </div>
               </div>
             </div>
           </div>
