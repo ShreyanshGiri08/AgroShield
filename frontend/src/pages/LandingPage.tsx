@@ -1,24 +1,13 @@
 import React from 'react';
 import {
-  Shield,
   Sparkles,
   ArrowRight,
-  TrendingUp,
   CloudRain,
   Scale,
   Camera,
   CheckCircle2,
-  Clock,
-  Compass,
-  FileText,
-  Lock,
-  ChevronRight,
-  ExternalLink,
   Leaf,
-  Layers,
-  BarChart3,
   SunMedium,
-  Check,
 } from 'lucide-react';
 
 interface LandingPageProps {

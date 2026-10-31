@@ -198,54 +198,6 @@ export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
-  // Speech Recognition (Microphone)
-  const handleVoiceInput = () => {
-    const SpeechRecognition =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      alert(tx.voiceNotSupported);
-      return;
-    }
-
-    if (isListening) {
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
-      setIsListening(false);
-      return;
-    }
-
-    try {
-      const recognition = new SpeechRecognition();
-      recognitionRef.current = recognition;
-      recognition.lang = isHi ? 'hi-IN' : 'en-IN';
-      recognition.continuous = false;
-      recognition.interimResults = false;
-
-      recognition.onstart = () => setIsListening(true);
-      recognition.onend = () => setIsListening(false);
-      recognition.onerror = (e: any) => {
-        console.warn('Speech recognition event:', e);
-        setIsListening(false);
-      };
-
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        if (transcript) {
-          setInputQuery(transcript);
-          handleSend(transcript);
-        }
-      };
-
-      recognition.start();
-    } catch (err) {
-      console.error('Mic start error:', err);
-      setIsListening(false);
-      alert(tx.voiceError);
-    }
-  };
-
   // Robust Text to Speech (Audio Read-Aloud)
   const handleSpeak = (text: string) => {
     if (!('speechSynthesis' in window)) return;
@@ -639,33 +591,22 @@ export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName
       </div>
 
       {/* Query Input Bar */}
-      <div className="flex items-center gap-2">
-        <button
-          onClick={handleVoiceInput}
-          className={`p-3.5 rounded-2xl border transition-all shadow-sm flex-shrink-0 ${
-            isListening
-              ? 'bg-red-500 text-white border-red-600 animate-pulse'
-              : 'bg-[#FFFDF5] hover:bg-[#F3B391] text-[#241909] border-[#E8C99A]'
-          }`}
-          title={isListening ? 'Stop' : 'Speak'}
-        >
-          {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5 text-[#E07B39]" />}
-        </button>
-
+      <div className="flex items-center gap-2.5">
         <input
           type="text"
           value={inputQuery}
           onChange={(e) => setInputQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-          placeholder={isListening ? tx.voiceListening : tx.placeholder}
-          className="flex-1 px-4 py-3.5 rounded-2xl border-2 border-[#E8C99A] bg-[#FFFDF5] text-sm sm:text-base font-bold text-[#241909] focus:outline-none focus:ring-2 focus:ring-[#E07B39] placeholder-[#5C4A30]/60 shadow-inner"
+          placeholder={tx.placeholder}
+          className="flex-1 px-5 py-4 rounded-2xl border-2 border-[#E8C99A] bg-[#FFFDF5] text-base sm:text-lg font-bold text-[#241909] focus:outline-none focus:ring-2 focus:ring-[#E07B39] placeholder-[#5C4A30]/60 shadow-inner"
         />
 
         <button
           onClick={() => handleSend()}
           disabled={isLoading || !inputQuery.trim()}
-          className="p-3.5 rounded-2xl bg-[#F3B391] hover:bg-[#E8A070] text-[#241909] border border-[#E07B39] font-black transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex-shrink-0"
+          className="px-6 py-4 rounded-2xl bg-[#F3B391] hover:bg-[#E8A070] text-[#241909] border border-[#E07B39] font-black transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center gap-2 flex-shrink-0"
         >
+          <span>{tx.sendBtn}</span>
           <Send className="w-5 h-5" />
         </button>
       </div>
