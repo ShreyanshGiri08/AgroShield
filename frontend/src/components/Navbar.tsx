@@ -1,6 +1,7 @@
 import React from 'react';
 import { useFarmer } from '../context/FarmerContext';
 import {
+  Home,
   LayoutDashboard,
   MessageSquare,
   CloudSun,
@@ -12,7 +13,7 @@ import {
   User,
 } from 'lucide-react';
 
-export type ActiveTab = 'dashboard' | 'advisory' | 'weather' | 'mandi' | 'camera' | 'scenario';
+export type ActiveTab = 'landing' | 'dashboard' | 'advisory' | 'weather' | 'mandi' | 'camera' | 'scenario';
 
 interface NavbarProps {
   activeTab: ActiveTab;
@@ -34,13 +35,18 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const tabs = [
     {
+      id: 'landing' as ActiveTab,
+      label: isHi ? 'होम' : 'Home',
+      icon: Home,
+    },
+    {
       id: 'dashboard' as ActiveTab,
       label: isHi ? 'खेत अवलोकन' : 'Dashboard',
       icon: LayoutDashboard,
     },
     {
       id: 'advisory' as ActiveTab,
-      label: isHi ? 'फसल सलाह' : 'Advisory AI',
+      label: isHi ? 'फसल सलाह AI' : 'Advisory AI',
       icon: MessageSquare,
     },
     {
@@ -50,12 +56,12 @@ export const Navbar: React.FC<NavbarProps> = ({
     },
     {
       id: 'mandi' as ActiveTab,
-      label: isHi ? 'मंडी भाव' : 'Mandi Rates',
+      label: isHi ? 'मंडी भाव व अनुमान' : 'Mandi Rates & Forecast',
       icon: Scale,
     },
     {
       id: 'camera' as ActiveTab,
-      label: isHi ? 'रोग पहचान' : 'Crop Health',
+      label: isHi ? 'रोग पहचान' : 'Crop Clinic',
       icon: Stethoscope,
     },
     {
@@ -75,21 +81,21 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => onTabChange('dashboard')}
             className="flex items-center space-x-2.5 cursor-pointer select-none"
           >
-            <div className="w-10 h-10 rounded-xl bg-[#F3B391] text-[#241909] flex items-center justify-center shadow-md">
+            <div className="w-10 h-10 rounded-xl bg-[#F3B391] text-[#241909] flex items-center justify-center shadow-md border border-[#E07B39]/40">
               <Shield className="w-6 h-6 stroke-[2.5]" />
             </div>
             <div>
-              <span className="font-extrabold text-xl tracking-tight text-[#FEFADC] block leading-none">
+              <span className="font-black text-xl tracking-tight text-[#FEFADC] block leading-none">
                 AgroShield
               </span>
-              <span className="text-[11px] font-semibold text-[#D4A876] mt-0.5 block leading-none">
+              <span className="text-[11px] font-bold text-[#D4A876] mt-0.5 block leading-none">
                 {isHi ? 'किसान सुरक्षा प्रणाली' : 'Agricultural Intelligence'}
               </span>
             </div>
           </div>
 
           {/* Desktop Navigation Tabs */}
-          <div className="hidden lg:flex items-center space-x-1.5">
+          <div className="hidden lg:flex items-center space-x-1">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -97,7 +103,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   key={tab.id}
                   onClick={() => onTabChange(tab.id)}
-                  className={`flex items-center space-x-2 px-3.5 py-2 rounded-xl text-sm font-bold transition-all ${
+                  className={`flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-black transition-all ${
                     isActive
                       ? 'bg-[#F3B391] text-[#241909] shadow-md scale-[1.02]'
                       : 'text-[#FEFADC] hover:bg-[#3D2E14] hover:text-[#F3B391]'

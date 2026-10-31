@@ -4,6 +4,7 @@ const API_BASE = 'http://localhost:8000';
 
 export const apiClient = axios.create({
   baseURL: API_BASE,
+  timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -78,6 +79,13 @@ export const fetchLiveWeather = async (lat: number, lon: number) => {
 export const fetchMandiPrices = async (state: string, district?: string, commodity?: string) => {
   const res = await apiClient.get('/api/mandi/prices', {
     params: { state, district, commodity, limit: 15 },
+  });
+  return res.data;
+};
+
+export const fetchMandiPrediction = async (commodity: string, modalPrice?: number, state: string = 'Maharashtra') => {
+  const res = await apiClient.get('/api/mandi/predict', {
+    params: { commodity, modal_price: modalPrice, state },
   });
   return res.data;
 };

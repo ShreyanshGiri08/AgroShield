@@ -1,6 +1,7 @@
 import React, { useState, useEffect, Component, type ErrorInfo, type ReactNode } from 'react';
 import { FarmerProvider, useFarmer } from './context/FarmerContext';
 import LoginPage from './pages/LoginPage';
+import LandingPage from './pages/LandingPage';
 import { Navbar, type ActiveTab } from './components/Navbar';
 import { FarmarianMascot } from './components/FarmarianMascot';
 import { WeatherCard } from './components/WeatherCard';
@@ -10,17 +11,17 @@ import { AgentChat } from './components/AgentChat';
 import { MandiRadar } from './components/MandiRadar';
 import { CropHealthCamera } from './components/CropHealthCamera';
 import { ScenarioSandbox } from './components/ScenarioSandbox';
-import { fetchLiveWeather, apiClient, addFarmerCrop, type CropData } from './services/api';
+import { fetchLiveWeather, apiClient, addFarmerCrop, fetchFarmerProfile, type CropData } from './services/api';
 import { ShieldCheck, Sparkles, ArrowRight, Leaf, MapPin, Plus, X, RefreshCw } from 'lucide-react';
 
 const CATALOG_CROPS = [
-  { name: 'Cotton',    hindi: 'कपास',    icon: '🌱' },
-  { name: 'Soybean',   hindi: 'सोयाबीन', icon: '🌿' },
-  { name: 'Wheat',     hindi: 'गेहूं',   icon: '🌾' },
-  { name: 'Rice',      hindi: 'चावल',    icon: '🌾' },
-  { name: 'Chickpea',  hindi: 'चना',     icon: '🌱' },
-  { name: 'Maize',     hindi: 'मक्का',   icon: '🌽' },
-  { name: 'Sugarcane', hindi: 'गन्ना',   icon: '🎋' },
+  { name: 'Cotton',    hindi: 'कपास' },
+  { name: 'Soybean',   hindi: 'सोयाबीन' },
+  { name: 'Wheat',     hindi: 'गेहूं' },
+  { name: 'Rice',      hindi: 'चावल (धान)' },
+  { name: 'Chickpea',  hindi: 'चना' },
+  { name: 'Maize',     hindi: 'मक्का' },
+  { name: 'Sugarcane', hindi: 'गन्ना' },
 ];
 
 // ─── Top-Level Error Boundary (Prevents ANY blank screens) ────────────────────
@@ -56,8 +57,8 @@ class AgroErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState
       return (
         <div className="min-h-screen bg-[#FEFADC] flex items-center justify-center p-6 text-[#0F1108]">
           <div className="bg-[#F6D4BA] border-2 border-[#E8C99A] rounded-2xl p-8 max-w-lg w-full text-center shadow-xl space-y-4">
-            <div className="w-12 h-12 bg-[#241909] text-[#FEFADC] rounded-full mx-auto flex items-center justify-center text-2xl font-bold">
-              🌾
+            <div className="w-12 h-12 bg-[#241909] text-[#FEFADC] rounded-full mx-auto flex items-center justify-center font-bold">
+              <Leaf className="w-6 h-6 text-[#F3B391]" />
             </div>
             <h2 className="text-xl font-bold text-[#241909]">
               खेत डैशबोर्ड लोड करने में समस्या हुई
@@ -85,8 +86,9 @@ class AgroErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState
 
 // ─── Main Inner Component ─────────────────────────────────────────────────────
 const AppInner: React.FC = () => {
-  const { farmer, language, activeCrop, setActiveCrop, isLoggedIn, setFarmer } = useFarmer();
+  const { farmer, language, setLanguage, activeCrop, setActiveCrop, isLoggedIn, setFarmer } = useFarmer();
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [weather, setWeather] = useState<any>(null);
   const [riskData, setRiskData] = useState<any>(null);
 
@@ -127,6 +129,44 @@ const AppInner: React.FC = () => {
 
   const cropsList: CropData[] = farmer?.crops && farmer.crops.length > 0 ? farmer.crops : [currentCrop];
 
+  // 1-Click Demo Login Handler for Hackathon Evaluators
+  const handleQuickDemoLogin = async () => {
+    try {
+      const demoProfile = await fetchFarmerProfile('9696755170');
+      setFarmer(demoProfile);
+      setActiveTab('dashboard');
+      setShowAuthModal(false);
+    } catch (err) {
+      console.warn('Demo profile load fallback, logging in local demo profile:', err);
+      setFarmer({
+        user_id: 'c79d5ff8-3cbd-4f85-9336-94e395877a0f',
+        full_name: 'R Patel',
+        phone_number: '9696755170',
+        preferred_language: language,
+        location: {
+          village: 'Barshitakli',
+          district: 'Akola',
+          state: 'Maharashtra',
+          latitude: 20.7002,
+          longitude: 77.0082,
+        },
+        farm: {
+          name: 'Patel Krishi Farm',
+          area_acres: 6.5,
+          soil_type: 'Black Cotton Soil',
+          irrigation_source: 'Borewell & Drip',
+        },
+        crops: [
+          { name: 'Cotton', hindi_name: 'कपास', variety: 'Bt Hybrid', sowing_date: '2026-08-15' },
+          { name: 'Wheat', hindi_name: 'गेहूं', variety: 'Sharbati Lokwan', sowing_date: '2026-10-10' },
+        ],
+        crop: { name: 'Cotton', hindi_name: 'कपास', variety: 'Bt Hybrid', sowing_date: '2026-08-15' },
+      });
+      setActiveTab('dashboard');
+      setShowAuthModal(false);
+    }
+  };
+
   // Load live weather once for farmer's verified coordinates
   useEffect(() => {
     if (!farmer) return;
@@ -162,8 +202,40 @@ const AppInner: React.FC = () => {
     loadCropRisk();
   }, [farmer?.user_id, currentCrop?.name, safeLocation.latitude, safeLocation.longitude]);
 
+  // If user is not logged in:
   if (!isLoggedIn || !farmer) {
-    return <LoginPage onLoginSuccess={(farmerData) => setFarmer(farmerData)} />;
+    if (showAuthModal) {
+      return (
+        <div className="relative">
+          <div className="fixed top-4 left-4 z-50">
+            <button
+              onClick={() => setShowAuthModal(false)}
+              className="px-4 py-2 rounded-xl bg-[#241909] text-[#FEFADC] text-xs font-bold shadow-lg border border-[#E8C99A]"
+            >
+              ← {language === 'hi' ? 'मुख्य पृष्ठ पर वापस जाएं' : 'Back to Home'}
+            </button>
+          </div>
+          <LoginPage
+            onLoginSuccess={(farmerData) => {
+              setFarmer(farmerData);
+              setShowAuthModal(false);
+              setActiveTab('dashboard');
+            }}
+          />
+        </div>
+      );
+    }
+
+    return (
+      <LandingPage
+        language={language}
+        onSetLanguage={setLanguage}
+        onOpenLogin={() => setShowAuthModal(true)}
+        onQuickDemoLogin={handleQuickDemoLogin}
+        isLoggedIn={false}
+        onOpenDashboard={() => setActiveTab('dashboard')}
+      />
+    );
   }
 
   const handleAddCropSubmit = async (e: React.FormEvent) => {
@@ -177,7 +249,6 @@ const AppInner: React.FC = () => {
         sowing_date: newCropSowingDate,
       });
       setFarmer(updatedFarmer);
-      // Auto-select newly added crop
       const newlyAdded = updatedFarmer.crops?.find((c) => c.name === newCropName);
       if (newlyAdded) {
         setActiveCrop(newlyAdded);
@@ -261,190 +332,202 @@ const AppInner: React.FC = () => {
         location={locationString}
       />
 
-      <main className="flex-1 max-w-[1400px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* VIEW 1: DASHBOARD */}
-        {activeTab === 'dashboard' && (
-          <div className="space-y-8">
-            {/* Hero Farm Panel */}
-            <div className="agro-card-warm p-6 sm:p-8">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-[#E8C99A] pb-6">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <MapPin className="w-4 h-4 text-[#E07B39]" />
-                    <span className="text-xs font-semibold text-[#5C4A30] uppercase tracking-wider">
-                      {safeLocation.village}, {safeLocation.district} • {safeLocation.state}
+      {/* VIEW 0: LANDING PAGE (When toggled via Navbar Home) */}
+      {activeTab === 'landing' ? (
+        <LandingPage
+          language={language}
+          onSetLanguage={setLanguage}
+          onOpenLogin={() => setActiveTab('dashboard')}
+          onQuickDemoLogin={() => setActiveTab('dashboard')}
+          isLoggedIn={true}
+          onOpenDashboard={() => setActiveTab('dashboard')}
+        />
+      ) : (
+        <main className="flex-1 max-w-[1400px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* VIEW 1: DASHBOARD */}
+          {activeTab === 'dashboard' && (
+            <div className="space-y-8">
+              {/* Hero Farm Panel */}
+              <div className="agro-card-warm p-6 sm:p-8">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-[#E8C99A] pb-6">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <MapPin className="w-4 h-4 text-[#E07B39]" />
+                      <span className="text-xs font-semibold text-[#5C4A30] uppercase tracking-wider">
+                        {safeLocation.village}, {safeLocation.district} • {safeLocation.state}
+                      </span>
+                    </div>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-[#241909] tracking-tight">
+                      {language === 'hi' ? `नमस्ते, ${safeFullName}!` : `Hello, ${safeFullName}!`}
+                    </h1>
+                    <p className="text-sm text-[#5C4A30] mt-1">{tx.farmIntel}</p>
+                  </div>
+                  <div className="flex items-center space-x-3 flex-shrink-0">
+                    <button onClick={() => setActiveTab('advisory')} className="btn-primary flex items-center space-x-2">
+                      <Sparkles className="w-4 h-4" />
+                      <span>{tx.consultAdvisor}</span>
+                    </button>
+                    <button onClick={() => setActiveTab('scenario')} className="btn-secondary flex items-center space-x-2">
+                      <span>{tx.simulateStress}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* MULTI-CROP SELECTOR BAR */}
+                <div className="pt-4 pb-2 border-b border-[#E8C99A] flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-xs font-bold text-[#241909] flex items-center gap-1.5 mr-1">
+                      <Leaf className="w-4 h-4 text-[#3A7D44]" />
+                      {tx.allCrops}:
+                    </span>
+
+                    {cropsList.map((c, i) => {
+                      const isSelected = currentCrop.name === c.name;
+                      return (
+                        <button
+                          key={i}
+                          onClick={() => setActiveCrop(c)}
+                          className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all border flex items-center gap-1.5 ${
+                            isSelected
+                              ? 'bg-[#241909] text-[#FEFADC] border-[#241909] shadow-md scale-[1.02]'
+                              : 'bg-[#FEFADC] text-[#5C4A30] border-[#E8C99A] hover:bg-[#F3B391] hover:text-[#241909]'
+                          }`}
+                        >
+                          <span>{language === 'hi' ? c.hindi_name || c.name : c.name}</span>
+                          {c.variety && <span className="text-[10px] opacity-80">({c.variety})</span>}
+                          {isSelected && <span className="w-2 h-2 rounded-full bg-[#3A7D44]" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <button
+                    onClick={() => setShowAddCropModal(true)}
+                    className="px-3 py-1.5 rounded-xl bg-[#F3B391] hover:bg-[#E8A070] text-[#241909] border border-[#E07B39] font-bold text-xs flex items-center gap-1 shadow-sm transition-all"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>{tx.addCropBtn}</span>
+                  </button>
+                </div>
+
+                {/* 4-Item Context Data Bar */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
+                  <div className="bg-[#FEFADC] rounded-xl p-4 border border-[#E8C99A]">
+                    <span className="text-xs sm:text-sm text-[#5C4A30] font-extrabold block mb-1">
+                      <Leaf className="w-3.5 h-3.5 inline mr-1 text-[#3A7D44]" />
+                      {tx.cultivatedCrop}
+                    </span>
+                    <span className="text-base sm:text-lg font-black text-[#241909] block">
+                      {language === 'hi' ? currentCrop.hindi_name || currentCrop.name : currentCrop.name}
+                      {currentCrop.variety ? ` • ${currentCrop.variety}` : ''}
+                    </span>
+                    <span className="text-xs sm:text-sm text-[#5C4A30] font-bold block mt-0.5">
+                      {language === 'hi' ? `बुवाई: ${currentCrop.sowing_date || 'N/A'}` : `Sown: ${currentCrop.sowing_date || 'N/A'}`}
                     </span>
                   </div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-[#241909] tracking-tight">
-                    {language === 'hi' ? `नमस्ते, ${safeFullName}! 🙏` : `Hello, ${safeFullName}!`}
-                  </h1>
-                  <p className="text-sm text-[#5C4A30] mt-1">{tx.farmIntel}</p>
-                </div>
-                <div className="flex items-center space-x-3 flex-shrink-0">
-                  <button onClick={() => setActiveTab('advisory')} className="btn-primary flex items-center space-x-2">
-                    <Sparkles className="w-4 h-4" />
-                    <span>{tx.consultAdvisor}</span>
-                  </button>
-                  <button onClick={() => setActiveTab('scenario')} className="btn-secondary flex items-center space-x-2">
-                    <span>{tx.simulateStress}</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* MULTI-CROP SELECTOR BAR */}
-              <div className="pt-4 pb-2 border-b border-[#E8C99A] flex flex-wrap items-center justify-between gap-3">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-bold text-[#241909] flex items-center gap-1.5 mr-1">
-                    <Leaf className="w-4 h-4 text-[#3A7D44]" />
-                    {tx.allCrops}:
-                  </span>
-
-                  {cropsList.map((c, i) => {
-                    const isSelected = currentCrop.name === c.name;
-                    return (
-                      <button
-                        key={i}
-                        onClick={() => setActiveCrop(c)}
-                        className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all border flex items-center gap-1.5 ${
-                          isSelected
-                            ? 'bg-[#241909] text-[#FEFADC] border-[#241909] shadow-md scale-[1.02]'
-                            : 'bg-[#FEFADC] text-[#5C4A30] border-[#E8C99A] hover:bg-[#F3B391] hover:text-[#241909]'
-                        }`}
-                      >
-                        <span>{language === 'hi' ? c.hindi_name || c.name : c.name}</span>
-                        {c.variety && <span className="text-[10px] opacity-80">({c.variety})</span>}
-                        {isSelected && <span className="w-2 h-2 rounded-full bg-[#3A7D44]" />}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <button
-                  onClick={() => setShowAddCropModal(true)}
-                  className="px-3 py-1.5 rounded-xl bg-[#F3B391] hover:bg-[#E8A070] text-[#241909] border border-[#E07B39] font-bold text-xs flex items-center gap-1 shadow-sm transition-all"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>{tx.addCropBtn}</span>
-                </button>
-              </div>
-
-              {/* 4-Item Context Data Bar */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
-                <div className="bg-[#FEFADC] rounded-lg p-3 border border-[#E8C99A]">
-                  <span className="text-xs text-[#5C4A30] font-medium block mb-1">
-                    <Leaf className="w-3 h-3 inline mr-1 text-[#3A7D44]" />
-                    {tx.cultivatedCrop}
-                  </span>
-                  <span className="text-sm font-bold text-[#241909] block">
-                    {language === 'hi' ? currentCrop.hindi_name || currentCrop.name : currentCrop.name}
-                    {currentCrop.variety ? ` • ${currentCrop.variety}` : ''}
-                  </span>
-                  <span className="text-xs text-[#5C4A30]">
-                    {language === 'hi' ? `बुवाई: ${currentCrop.sowing_date || 'N/A'}` : `Sown: ${currentCrop.sowing_date || 'N/A'}`}
-                  </span>
-                </div>
-                <div className="bg-[#FEFADC] rounded-lg p-3 border border-[#E8C99A]">
-                  <span className="text-xs text-[#5C4A30] font-medium block mb-1">{tx.landSoil}</span>
-                  <span className="text-sm font-bold text-[#241909] block">{safeFarm.area_acres} {tx.acres}</span>
-                  <span className="text-xs text-[#5C4A30]">{safeFarm.soil_type}</span>
-                </div>
-                <div className="bg-[#FEFADC] rounded-lg p-3 border border-[#E8C99A]">
-                  <span className="text-xs text-[#5C4A30] font-medium block mb-1">{tx.irrigationSystem}</span>
-                  <span className="text-sm font-bold text-[#241909] block">{safeFarm.irrigation_source}</span>
-                  <span className="text-xs text-[#3A7D44] font-medium">{tx.active}</span>
-                </div>
-                <div className="bg-[#FEFADC] rounded-lg p-3 border border-[#E8C99A]">
-                  <span className="text-xs text-[#5C4A30] font-medium block mb-1">{tx.dataIntegrity}</span>
-                  <span className="text-sm font-bold text-[#3A7D44] flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    {tx.zeroMock}
-                  </span>
-                  <span className="text-xs text-[#5C4A30]">{tx.verifiedApis}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Phenological Crop Growth Stage */}
-            <CropStageStepper
-              cropName={currentCrop.name}
-              hindiName={currentCrop.hindi_name || currentCrop.name}
-              sowingDate={currentCrop.sowing_date || '2026-08-15'}
-              language={language}
-            />
-
-            {/* Main 2-Column Responsive Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              <div className="lg:col-span-7 space-y-8">
-                <WeatherCard weather={weather} language={language} />
-                <MandiRadar
-                  language={language}
-                  defaultState={safeLocation.state}
-                  defaultDistrict={safeLocation.district}
-                  defaultCommodity={currentCrop.name}
-                />
-              </div>
-              <div className="lg:col-span-5 space-y-8">
-                <CropRiskGauge riskData={riskData} language={language} />
-
-                {/* Farmarian Assistant Banner */}
-                <div className="agro-card p-6 space-y-4">
-                  <div className="flex items-center space-x-3 pb-3 border-b border-[#E8C99A]">
-                    <FarmarianMascot state="welcoming" size={36} />
-                    <div>
-                      <h4 className="text-sm font-bold text-[#241909]">{tx.farmarianTitle}</h4>
-                      <p className="text-xs text-[#5C4A30]">{tx.farmarianDesc}</p>
-                    </div>
+                  <div className="bg-[#FEFADC] rounded-xl p-4 border border-[#E8C99A]">
+                    <span className="text-xs sm:text-sm text-[#5C4A30] font-extrabold block mb-1">{tx.landSoil}</span>
+                    <span className="text-base sm:text-lg font-black text-[#241909] block">{safeFarm.area_acres} {tx.acres}</span>
+                    <span className="text-xs sm:text-sm text-[#5C4A30] font-bold block mt-0.5">{safeFarm.soil_type}</span>
                   </div>
-                  <p className="text-sm text-[#5C4A30] leading-relaxed">{tx.farmarianPrompt}</p>
-                  <button onClick={() => setActiveTab('advisory')} className="w-full btn-primary text-sm flex items-center justify-center space-x-2">
-                    <span>{tx.openAdvisory}</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
+                  <div className="bg-[#FEFADC] rounded-xl p-4 border border-[#E8C99A]">
+                    <span className="text-xs sm:text-sm text-[#5C4A30] font-extrabold block mb-1">{tx.irrigationSystem}</span>
+                    <span className="text-base sm:text-lg font-black text-[#241909] block">{safeFarm.irrigation_source}</span>
+                    <span className="text-xs sm:text-sm text-[#3A7D44] font-black block mt-0.5">{tx.active}</span>
+                  </div>
+                  <div className="bg-[#FEFADC] rounded-xl p-4 border border-[#E8C99A]">
+                    <span className="text-xs sm:text-sm text-[#5C4A30] font-extrabold block mb-1">{tx.dataIntegrity}</span>
+                    <span className="text-base sm:text-lg font-black text-[#3A7D44] flex items-center gap-1">
+                      <ShieldCheck className="w-4 h-4" />
+                      {tx.zeroMock}
+                    </span>
+                    <span className="text-xs sm:text-sm text-[#5C4A30] font-bold block mt-0.5">{tx.verifiedApis}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Phenological Crop Growth Stage */}
+              <CropStageStepper
+                cropName={currentCrop.name}
+                hindiName={currentCrop.hindi_name || currentCrop.name}
+                sowingDate={currentCrop.sowing_date || '2026-08-15'}
+                language={language}
+              />
+
+              {/* Main 2-Column Responsive Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div className="lg:col-span-7 space-y-8">
+                  <WeatherCard weather={weather} language={language} />
+                  <MandiRadar
+                    language={language}
+                    defaultState={safeLocation.state}
+                    defaultDistrict={safeLocation.district}
+                    defaultCommodity={currentCrop.name}
+                  />
+                </div>
+                <div className="lg:col-span-5 space-y-8">
+                  <CropRiskGauge riskData={riskData} language={language} />
+
+                  {/* Farmarian Assistant Banner */}
+                  <div className="agro-card p-6 space-y-4">
+                    <div className="flex items-center space-x-3 pb-3 border-b border-[#E8C99A]">
+                      <FarmarianMascot state="welcoming" size={36} />
+                      <div>
+                        <h4 className="text-sm font-bold text-[#241909]">{tx.farmarianTitle}</h4>
+                        <p className="text-xs text-[#5C4A30]">{tx.farmarianDesc}</p>
+                      </div>
+                    </div>
+                    <p className="text-sm text-[#5C4A30] leading-relaxed">{tx.farmarianPrompt}</p>
+                    <button onClick={() => setActiveTab('advisory')} className="w-full btn-primary text-sm flex items-center justify-center space-x-2">
+                      <span>{tx.openAdvisory}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* VIEW 2: ADVISORY */}
-        {activeTab === 'advisory' && (
-          <AgentChat userId={farmer.user_id} language={language} cropName={currentCrop.name} />
-        )}
+          {/* VIEW 2: ADVISORY */}
+          {activeTab === 'advisory' && (
+            <AgentChat userId={farmer.user_id} language={language} cropName={currentCrop.name} />
+          )}
 
-        {/* VIEW 3: WEATHER */}
-        {activeTab === 'weather' && (
-          <div className="space-y-6">
-            <WeatherCard weather={weather} language={language} />
-            <CropRiskGauge riskData={riskData} language={language} />
-          </div>
-        )}
+          {/* VIEW 3: WEATHER */}
+          {activeTab === 'weather' && (
+            <div className="space-y-6">
+              <WeatherCard weather={weather} language={language} />
+              <CropRiskGauge riskData={riskData} language={language} />
+            </div>
+          )}
 
-        {/* VIEW 4: MANDI */}
-        {activeTab === 'mandi' && (
-          <MandiRadar
-            language={language}
-            defaultState={safeLocation.state}
-            defaultDistrict={safeLocation.district}
-            defaultCommodity={currentCrop.name}
-          />
-        )}
+          {/* VIEW 4: MANDI */}
+          {activeTab === 'mandi' && (
+            <MandiRadar
+              language={language}
+              defaultState={safeLocation.state}
+              defaultDistrict={safeLocation.district}
+              defaultCommodity={currentCrop.name}
+            />
+          )}
 
-        {/* VIEW 5: CAMERA PATHOLOGY */}
-        {activeTab === 'camera' && (
-          <CropHealthCamera language={language} cropName={currentCrop.name} location={locationString} />
-        )}
+          {/* VIEW 5: CAMERA PATHOLOGY */}
+          {activeTab === 'camera' && (
+            <CropHealthCamera language={language} cropName={currentCrop.name} location={locationString} />
+          )}
 
-        {/* VIEW 6: SCENARIO STRESS TEST */}
-        {activeTab === 'scenario' && (
-          <ScenarioSandbox
-            language={language}
-            cropName={currentCrop.name}
-            growthStageName="Vegetative"
-            latitude={safeLocation.latitude}
-            longitude={safeLocation.longitude}
-          />
-        )}
-      </main>
+          {/* VIEW 6: SCENARIO STRESS TEST */}
+          {activeTab === 'scenario' && (
+            <ScenarioSandbox
+              language={language}
+              cropName={currentCrop.name}
+              growthStageName="Vegetative"
+              latitude={safeLocation.latitude}
+              longitude={safeLocation.longitude}
+            />
+          )}
+        </main>
+      )}
 
       {/* MODAL: ADD ANOTHER CROP */}
       {showAddCropModal && (
@@ -469,13 +552,12 @@ const AppInner: React.FC = () => {
                       key={c.name}
                       type="button"
                       onClick={() => setNewCropName(c.name)}
-                      className={`p-2.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all ${
+                      className={`p-3 rounded-xl border text-xs sm:text-sm font-extrabold flex items-center justify-center gap-1.5 transition-all ${
                         newCropName === c.name
-                          ? 'bg-[#3A7D44] text-white border-[#276738] shadow-sm'
-                          : 'bg-[#FEFADC] text-[#5C4A30] border-[#E8C99A]'
+                          ? 'bg-[#241909] text-[#FEFADC] border-[#241909] shadow-sm'
+                          : 'bg-[#FEFADC] text-[#5C4A30] border-[#E8C99A] hover:bg-[#F3B391]'
                       }`}
                     >
-                      <span>{c.icon}</span>
                       <span>{language === 'hi' ? c.hindi : c.name}</span>
                     </button>
                   ))}

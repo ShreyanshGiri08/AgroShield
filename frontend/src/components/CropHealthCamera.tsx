@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { analyzeCropPhoto } from '../services/api';
-import { Camera, Upload, AlertCircle, CheckCircle2, Sparkles, RefreshCw } from 'lucide-react';
+import { Camera, Upload, AlertCircle, Sparkles, RefreshCw } from 'lucide-react';
 
 interface CropHealthCameraProps {
   language: string;

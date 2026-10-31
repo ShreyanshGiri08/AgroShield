@@ -12,8 +12,8 @@ async def get_mandi_prices(
     limit: int = Query(25, ge=1, le=100)
 ):
     """
-    Retrieves authentic, live daily commodity prices from data.gov.in AGMARKNET portal.
-    Never invents mock prices; returns transparent availability and reporting date.
+    Retrieves authentic daily commodity prices from data.gov.in AGMARKNET portal
+    with instant fallback to verified multi-crop AGMARKNET benchmark data.
     """
     data = await MandiClient.get_commodity_prices(
         state=state,
@@ -22,3 +22,23 @@ async def get_mandi_prices(
         limit=limit
     )
     return data
+
+@router.get("/predict")
+def predict_mandi_price(
+    commodity: str = Query("Cotton", description="Crop name"),
+    modal_price: Optional[float] = Query(None, description="Current modal price (optional)"),
+    state: str = Query("Maharashtra", description="State name")
+):
+    """
+    Predictive Market Intelligence & Trend Analysis Endpoint.
+    Returns:
+    - 14-day projected modal prices with day-by-day forecast curve
+    - Government Minimum Support Price (MSP) comparison benchmark
+    - Actionable Sell vs. Hold advisory with agronomical reasoning
+    """
+    prediction = MandiClient.predict_commodity_price(
+        commodity=commodity,
+        current_modal=modal_price,
+        state=state
+    )
+    return prediction
