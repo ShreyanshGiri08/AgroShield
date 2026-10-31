@@ -7,66 +7,49 @@ export default {
   theme: {
     extend: {
       colors: {
-        pitch: {
-          DEFAULT: '#0F1108',
-          900: '#0F1108',
-          800: '#1b1e10',
-          700: '#2b2f1c',
+        canvas: {
+          bg: '#F8F7F4',        // Warm bone neutral canvas
+          surface: '#FFFFFF',   // Pure matte white panel
+          subtle: '#F0ECE1',    // Restrained secondary tile
+          border: '#E3DDD1',    // Hairline warm border
+          dark: '#141A15',      // Matte deep charcoal green for header
         },
-        coffee: {
-          DEFAULT: '#241909',
-          950: '#191106',
-          900: '#241909',
-          800: '#382811',
-          700: '#4d3718',
-          600: '#644822',
+        ink: {
+          primary: '#1A211B',   // Deep readable charcoal
+          secondary: '#576258', // Muted secondary text
+          muted: '#859286',     // Footnotes / tertiary labels
+          invert: '#F8F7F4',
         },
-        peach: {
-          DEFAULT: '#F3B391',
-          light: '#f9d5c3',
-          dark: '#e89467',
-          deep: '#d97b49',
+        accent: {
+          DEFAULT: '#1E472D',   // Deep botanical forest green
+          hover: '#153320',
+          subtle: '#EBF3EC',
+          warm: '#C27847',      // Terracotta highlight (used very sparingly)
+          warmSubtle: '#F7EDE6',
         },
-        sand: {
-          DEFAULT: '#F6D4BA',
-          light: '#fae3d1',
-          ultralight: '#fdf5ee',
-          dark: '#ecc09e',
-        },
-        cornsilk: {
-          DEFAULT: '#FEFADC',
-          light: '#fffee8',
-          surface: '#FDFBF4',
-          dark: '#f6f0c7',
-        },
-        // Restrained semantic status colors
-        agri: {
-          safe: '#2E7D32',
-          safeBg: '#E8F5E9',
-          warning: '#E65100',
-          warningBg: '#FFF3E0',
-          danger: '#C62828',
-          dangerBg: '#FFEBEE',
-          info: '#0277BD',
-          infoBg: '#E1F5FE',
+        state: {
+          safe: '#276738',
+          safeBg: '#EDF6EF',
+          warning: '#995A1E',
+          warningBg: '#FBF2E9',
+          danger: '#9E2A2B',
+          dangerBg: '#F9ECEC',
         }
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', '"Noto Sans Devanagari"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        display: ['Outfit', '"Plus Jakarta Sans"', 'sans-serif'],
+        serif: ['Newsreader', 'Georgia', 'serif'],
+        sans: ['"Plus Jakarta Sans"', '"Noto Sans Devanagari"', 'system-ui', 'sans-serif'],
+        display: ['"Space Grotesk"', '"Plus Jakarta Sans"', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
         hindi: ['"Noto Sans Devanagari"', 'sans-serif'],
       },
       boxShadow: {
-        'subtle': '0 1px 2px 0 rgba(36, 25, 9, 0.04)',
-        'card': '0 4px 20px -2px rgba(36, 25, 9, 0.05), 0 2px 6px -1px rgba(36, 25, 9, 0.03)',
-        'card-hover': '0 12px 32px -4px rgba(36, 25, 9, 0.10), 0 4px 12px -2px rgba(36, 25, 9, 0.05)',
-        'glow-peach': '0 0 24px -2px rgba(243, 179, 145, 0.45)',
-        'glow-coffee': '0 8px 30px -4px rgba(36, 25, 9, 0.35)',
+        'panel': '0 1px 3px rgba(26, 33, 27, 0.04), 0 4px 12px rgba(26, 33, 27, 0.03)',
+        'panel-hover': '0 2px 6px rgba(26, 33, 27, 0.06), 0 8px 24px rgba(26, 33, 27, 0.05)',
       },
-      borderRadius: {
-        '2xl': '1rem',
-        '3xl': '1.5rem',
-        '4xl': '2rem',
+      spacing: {
+        '18': '4.5rem',
+        '22': '5.5rem',
       }
     },
   },

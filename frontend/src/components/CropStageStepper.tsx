@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sprout, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 
 interface CropStageStepperProps {
   cropName: string;
@@ -22,51 +22,51 @@ export const CropStageStepper: React.FC<CropStageStepperProps> = ({
     {
       name: 'अंकुरण व पौध',
       en: 'Seedling',
-      range: '0-25 days',
+      range: '0–25 DAS',
       min: 0,
       max: 25,
       sens: 'Moderate',
-      guidance: 'Ensure light irrigation and protect from early sap-sucking pests.',
-      guidanceHi: 'हल्की सिंचाई रखें और रस चूसने वाले कीटों से रक्षा करें।',
+      guidance: 'Light irrigation; monitor early sap-sucking pests.',
+      guidanceHi: 'हल्की सिंचाई रखें; रस चूसने वाले कीटों की निगरानी करें।',
     },
     {
       name: 'शाखा व कलियां',
       en: 'Squaring',
-      range: '26-50 days',
+      range: '26–50 DAS',
       min: 26,
       max: 50,
       sens: 'Moderate',
-      guidance: 'Weeding and nitrogen side-dressing recommended by ICAR.',
-      guidanceHi: 'निराई-गुड़ाई करें और नाइट्रोजन की संस्तुत मात्रा दें।',
+      guidance: 'Interculture weeding and recommended nitrogen application.',
+      guidanceHi: 'निराई-गुड़ाई करें और संस्तुत नाइट्रोजन दें।',
     },
     {
       name: 'फूल व गूलर बनना',
       en: 'Flowering & Boll',
-      range: '51-100 days',
+      range: '51–100 DAS',
       min: 51,
       max: 100,
       sens: 'Critical',
-      guidance: 'Most sensitive phase: avoid moisture stress and monitor for bollworms.',
-      guidanceHi: 'सर्वाधिक संवेदनशील अवस्था: नमी की कमी न होने दें व गूलर सुंडी की निगरानी रखें।',
+      guidance: 'Avoid moisture stress; monitor for pink bollworm infestation.',
+      guidanceHi: 'नमी की कमी न होने दें; गूलर सुंडी की निगरानी रखें।',
     },
     {
       name: 'गूलर खुलना',
       en: 'Boll Opening',
-      range: '101-140 days',
+      range: '101–140 DAS',
       min: 101,
       max: 140,
       sens: 'Moderate',
-      guidance: 'Stop irrigation to prevent boll rotting and promote uniform opening.',
-      guidanceHi: 'सिंचाई बंद करें ताकि गूलर सड़न न हो और कपास साफ खुले।',
+      guidance: 'Cease irrigation to prevent rotting and ensure clean fiber.',
+      guidanceHi: 'सिंचाई बंद करें ताकि गूलर सड़न न हो और रेशा साफ रहे।',
     },
     {
       name: 'परिपक्वता व चुनाई',
       en: 'Harvest & Picking',
-      range: '141-175 days',
+      range: '141–175 DAS',
       min: 141,
       max: 175,
       sens: 'Low',
-      guidance: 'Pick cotton in dry sunny weather after morning dew dries up.',
+      guidance: 'Pick after morning dew dries up under clear sunlight.',
       guidanceHi: 'सुबह की ओस सूखने के बाद धूप में साफ चुनाई करें।',
     },
   ];
@@ -76,39 +76,30 @@ export const CropStageStepper: React.FC<CropStageStepperProps> = ({
   const activeStage = stages[activeIdx];
 
   return (
-    <div className="agri-card p-6 sm:p-7 space-y-6">
+    <div className="matte-panel p-6 space-y-5">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#F3B391]/15">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-950/60 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
-            <Sprout className="w-6 h-6" />
-          </div>
-          <div>
-            <h3 className="text-lg font-black text-[#FEFADC] tracking-tight">
-              {language === 'hi' ? `${hindiName} का विकास चक्र` : `${cropName} Phenology Timeline`}
-            </h3>
-            <p className="text-xs text-[#F6D4BA]/60 font-medium">
-              {language === 'hi' ? `बुवाई तिथि: ${sowingDate}` : `Sown on: ${sowingDate}`} •{' '}
-              <span className="font-extrabold text-[#F3B391]">
-                {diffDays} {language === 'hi' ? 'दिन (DAS)' : 'Days After Sowing'}
-              </span>
-            </p>
-          </div>
+      <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[#E3DDD1] pb-3">
+        <div>
+          <h3 className="text-sm font-semibold text-[#1A211B] font-display">
+            {language === 'hi' ? `${hindiName} का फिनोलॉजिकल विकास चक्र` : `${cropName} Phenological Growth Timeline`}
+          </h3>
+          <p className="text-[11px] text-[#576258] mt-0.5">
+            ICAR-CICR Crop Calendar • Sown: {sowingDate} ({diffDays} Days After Sowing)
+          </p>
         </div>
 
         <div className="flex items-center space-x-2">
-          <span className="bg-[#F3B391] text-[#241909] text-xs font-black px-4 py-1.5 rounded-full flex items-center space-x-2 shadow-[0_0_12px_rgba(243,179,145,0.4)]">
-            <span className="w-2 h-2 rounded-full bg-[#241909] animate-ping" />
-            <span>{activeStage[language === 'hi' ? 'name' : 'en']}</span>
+          <span className="text-xs font-semibold px-2.5 py-0.5 rounded bg-[#1E472D] text-[#F8F7F4]">
+            {activeStage[language === 'hi' ? 'name' : 'en']}
           </span>
-          <span className="bg-amber-950/80 text-amber-300 border border-amber-600/50 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
+          <span className="text-[11px] font-mono text-[#576258]">
             {activeStage.sens} Sensitivity
           </span>
         </div>
       </div>
 
-      {/* Stepper Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+      {/* Stepper Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-5 gap-2.5">
         {stages.map((stg, i) => {
           const isPassed = i < activeIdx;
           const isCurrent = i === activeIdx;
@@ -116,52 +107,39 @@ export const CropStageStepper: React.FC<CropStageStepperProps> = ({
           return (
             <div
               key={stg.en}
-              className={`p-3.5 rounded-2xl border transition-all duration-300 relative ${
+              className={`p-3 rounded border text-xs transition-colors ${
                 isCurrent
-                  ? 'bg-gradient-to-b from-[#241909] to-[#140D05] border-[#F3B391] ring-2 ring-[#F3B391]/50 shadow-[0_0_20px_rgba(243,179,145,0.25)]'
+                  ? 'bg-[#EBF3EC] border-[#1E472D] shadow-sm'
                   : isPassed
-                  ? 'bg-[#0F1108]/60 border-emerald-500/20 opacity-80'
-                  : 'bg-[#0F1108]/30 border-dashed border-white/10 opacity-40'
+                  ? 'bg-[#FFFFFF] border-[#E3DDD1] text-[#576258]'
+                  : 'bg-[#F8F7F4] border-[#E3DDD1] text-[#859286]'
               }`}
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-black uppercase text-[#F6D4BA]/50 tracking-wider">
-                  Stage 0{i + 1}
-                </span>
-                {isPassed ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                ) : isCurrent ? (
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#F3B391] animate-pulse" />
-                ) : (
-                  <Clock className="w-3.5 h-3.5 text-white/30" />
-                )}
+              <div className="flex justify-between items-center text-[10px] font-mono text-[#859286] mb-1">
+                <span>Phase 0{i + 1}</span>
+                <span>{stg.range}</span>
               </div>
-
-              <h4 className="text-xs font-black text-white leading-snug">
+              <span className={`font-semibold block ${isCurrent ? 'text-[#1E472D]' : 'text-[#1A211B]'}`}>
                 {language === 'hi' ? stg.name : stg.en}
-              </h4>
-              <p className="text-[11px] text-[#F6D4BA]/70 mt-1 font-semibold">{stg.range}</p>
-
+              </span>
               {isCurrent && (
-                <div className="mt-2 pt-2 border-t border-[#F3B391]/30 flex items-center space-x-1 text-[10px] font-black text-[#F3B391]">
-                  <span>Active Phase</span>
-                </div>
+                <span className="text-[10px] text-[#1E472D] font-medium block mt-1">
+                  Active
+                </span>
               )}
             </div>
           );
         })}
       </div>
 
-      {/* Active Phase ICAR Guidance Callout */}
-      <div className="bg-[#0F1108]/70 border border-[#F3B391]/25 rounded-2xl p-4 flex items-start space-x-3 text-xs shadow-inner">
-        <AlertCircle className="w-4 h-4 text-[#F3B391] flex-shrink-0 mt-0.5" />
+      {/* Guidance Callout */}
+      <div className="text-xs text-[#576258] bg-[#F8F7F4] p-3 rounded border border-[#E3DDD1] flex items-start space-x-2">
+        <Calendar className="w-4 h-4 text-[#1E472D] flex-shrink-0 mt-0.5" />
         <div>
-          <span className="font-black text-white block">
-            {language === 'hi' ? 'ICAR विशेष संस्तुति (वर्तमान अवस्था):' : 'ICAR Stage Guidance:'}
+          <span className="font-semibold text-[#1A211B]">
+            {language === 'hi' ? 'वर्तमान अवस्था हेतु प्रबंधन निर्देश:' : 'Management Guidance for Current Stage:'}{' '}
           </span>
-          <p className="text-[#F6D4BA]/85 mt-0.5 font-medium leading-relaxed">
-            {language === 'hi' ? activeStage.guidanceHi : activeStage.guidance}
-          </p>
+          <span>{language === 'hi' ? activeStage.guidanceHi : activeStage.guidance}</span>
         </div>
       </div>
     </div>

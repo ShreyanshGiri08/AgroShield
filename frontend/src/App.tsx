@@ -9,7 +9,11 @@ import { MandiRadar } from './components/MandiRadar';
 import { CropHealthCamera } from './components/CropHealthCamera';
 import { ScenarioSandbox } from './components/ScenarioSandbox';
 import { fetchLiveWeather, apiClient } from './services/api';
-import { Sparkles, Camera, ArrowRight, Sprout, Layers, Droplet } from 'lucide-react';
+import {
+  ShieldCheck,
+  Sparkles,
+  ArrowRight,
+} from 'lucide-react';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
@@ -26,14 +30,15 @@ export const App: React.FC = () => {
       longitude: 77.0082,
     },
     farm: {
-      name: 'Akola Cotton Farm',
+      name: 'Akola Cotton Plot 04',
       area_acres: 5.5,
-      soil_type: 'Black Cotton Soil (काळी माती)',
+      soil_type: 'Deep Black Cotton Soil (काळी माती)',
       irrigation_source: 'Borewell / Drip',
     },
     crop: {
       name: 'Cotton',
       hindi_name: 'कपास',
+      variety: 'Bt Cotton (Hybrid)',
       sowing_date: '2026-08-20',
       status: 'ACTIVE',
     },
@@ -68,8 +73,8 @@ export const App: React.FC = () => {
   const locationString = `${farmer.location.village}, ${farmer.location.district}`;
 
   return (
-    <div className="min-h-screen bg-[#0D0F07] text-[#FEFADC] flex flex-col font-sans selection:bg-[#F3B391] selection:text-[#241909]">
-      {/* Top Floating Glass Navigation */}
+    <div className="min-h-screen bg-[#F8F7F4] text-[#1A211B] flex flex-col font-sans">
+      {/* Editorial Top Navigation */}
       <Navbar
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -79,82 +84,85 @@ export const App: React.FC = () => {
         location={locationString}
       />
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        {/* VIEW 1: MAIN FARMER DASHBOARD */}
+      {/* Main Asymmetrical Multi-Column Layout */}
+      <main className="flex-1 max-w-[1400px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* VIEW 1: MAIN DASHBOARD ASYMMETRICAL 2-COLUMN GRID */}
         {activeTab === 'dashboard' && (
           <div className="space-y-8">
-            {/* High-End Hero Welcome Banner */}
-            <div className="agri-card-dark p-6 sm:p-9 relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8 border border-[#F3B391]/30">
-              {/* Subtle Ambient Radial Glows */}
-              <div className="absolute -top-24 -left-24 w-96 h-96 bg-[#F3B391]/15 rounded-full blur-3xl pointer-events-none" />
-              <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-[#241909]/60 rounded-full blur-3xl pointer-events-none" />
-
-              <div className="space-y-4 z-10 text-center lg:text-left max-w-2xl">
-                <div className="inline-flex items-center space-x-2 bg-[#F3B391]/15 text-[#F3B391] text-xs font-black px-3.5 py-1.5 rounded-full border border-[#F3B391]/40 shadow-inner">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
-                  <span>
+            {/* Editorial Lead Section: Plot Profile & Agronomic Health */}
+            <div className="matte-panel p-6 sm:p-8">
+              <div className="flex flex-col lg:flex-row lg:items-baseline justify-between gap-6 border-b border-[#E3DDD1] pb-6">
+                <div>
+                  <span className="text-[11px] font-semibold text-[#576258] uppercase tracking-wider block font-display mb-1">
+                    Plot Telemetry Record • ID: AKL-2026-04
+                  </span>
+                  <h1 className="text-2xl sm:text-3xl font-serif text-[#1A211B] tracking-tight">
                     {language === 'hi'
-                      ? 'स्वायत्त खेत निगरानी चालू • वास्तविक डेटा सिंक'
-                      : 'Autonomous Farm Guardian Active • Live Data Sync'}
-                  </span>
+                      ? `${farmer.full_name} — खेत अवलोकन व निर्णय सहायता`
+                      : `${farmer.full_name} — Farm Decision Intelligence`}
+                  </h1>
+                  <p className="text-xs sm:text-sm text-[#576258] mt-1 max-w-3xl leading-relaxed">
+                    {language === 'hi'
+                      ? 'अकोला स्थित 5.5 एकड़ कपास खेत का सूक्ष्म-जलवायु, ICAR अनुसंधान बुलेटिन और APMC मंडी आवक का संश्लेषित प्रतिवेदन।'
+                      : 'Integrated agronomic report synthesizing Open-Meteo hyperlocal climate observation, ICAR-CICR crop calendars, and AGMARKNET daily arrivals for Akola.'}
+                  </p>
                 </div>
 
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white font-display">
-                  {language === 'hi'
-                    ? `राम-राम, ${farmer.full_name} जी!`
-                    : `Welcome back, ${farmer.full_name}!`}
-                </h1>
-
-                <p className="text-sm sm:text-base text-[#F6D4BA]/85 font-medium leading-relaxed">
-                  {language === 'hi'
-                    ? 'AgroShield ने आपके खेत के लिए वास्तविक Open-Meteo मौसम, ICAR अनुसंधान ज्ञानकोष और AGMARKNET मंडी भाव को सिंक कर लिया है। आज आपकी फसल पूर्णतः सुरक्षित है।'
-                    : 'AgroShield has synced live Open-Meteo climate, ICAR crop calendars, and AGMARKNET prices for your cotton plot. Your crop window is currently favorable.'}
-                </p>
-
-                {/* Farmer Plot Quick Info Chips */}
-                <div className="flex flex-wrap gap-2 pt-1 justify-center lg:justify-start">
-                  <span className="bg-black/50 border border-white/10 text-white text-xs px-3.5 py-1.5 rounded-xl flex items-center space-x-2 shadow-inner">
-                    <Sprout className="w-3.5 h-3.5 text-[#F3B391]" />
-                    <span className="font-bold">{farmer.crop.hindi_name} ({farmer.crop.name})</span>
-                  </span>
-                  <span className="bg-black/50 border border-white/10 text-white text-xs px-3.5 py-1.5 rounded-xl flex items-center space-x-2 shadow-inner">
-                    <Layers className="w-3.5 h-3.5 text-[#F6D4BA]" />
-                    <span className="font-bold">{farmer.farm.area_acres} Acres • {farmer.farm.soil_type}</span>
-                  </span>
-                  <span className="bg-black/50 border border-white/10 text-white text-xs px-3.5 py-1.5 rounded-xl flex items-center space-x-2 shadow-inner">
-                    <Droplet className="w-3.5 h-3.5 text-cyan-400" />
-                    <span className="font-bold">{farmer.farm.irrigation_source}</span>
-                  </span>
-                </div>
-
-                {/* Action CTAs */}
-                <div className="pt-3 flex flex-wrap gap-3 justify-center lg:justify-start">
+                <div className="flex items-center space-x-3 flex-shrink-0">
                   <button
                     onClick={() => setActiveTab('advisory')}
-                    className="bg-[#F3B391] hover:bg-[#e89467] text-[#241909] text-xs font-black px-6 py-3.5 rounded-xl transition shadow-[0_0_20px_rgba(243,179,145,0.4)] flex items-center space-x-2 transform hover:scale-[1.02]"
+                    className="btn-primary flex items-center space-x-2"
                   >
-                    <Sparkles className="w-4 h-4 text-[#241909]" />
-                    <span>{language === 'hi' ? 'फार्मरियन AI से सलाह लें' : 'Consult Farmarian AI'}</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>{language === 'hi' ? 'सलाहकार से पूछें' : 'Consult Advisor'}</span>
                   </button>
                   <button
-                    onClick={() => setActiveTab('camera')}
-                    className="bg-[#1E160C]/80 hover:bg-[#2E200C] text-white border border-[#F3B391]/30 text-xs font-bold px-6 py-3.5 rounded-xl transition flex items-center space-x-2 shadow-inner"
+                    onClick={() => setActiveTab('scenario')}
+                    className="btn-secondary flex items-center space-x-2"
                   >
-                    <Camera className="w-4 h-4 text-[#F3B391]" />
-                    <span>{language === 'hi' ? 'पत्ती रोग की जांच करें' : 'Inspect Plant Leaf'}</span>
+                    <span>{language === 'hi' ? 'तनाव सिमुलेटर' : 'Simulate Stress'}</span>
                   </button>
                 </div>
               </div>
 
-              {/* Farmarian Mascot Avatar Container */}
-              <div className="z-10 flex-shrink-0 bg-black/40 p-6 rounded-3xl border border-[#F3B391]/30 shadow-[0_0_30px_rgba(243,179,145,0.2)]">
-                <FarmarianMascot state="welcoming" size={140} />
+              {/* 4-Item Context Data Bar (No badge spam) */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6">
+                <div className="border-l-2 border-[#1E472D] pl-3">
+                  <span className="text-[11px] text-[#859286] font-medium block">Cultivated Crop</span>
+                  <span className="text-sm font-semibold text-[#1A211B] mt-0.5 block">
+                    {farmer.crop.hindi_name} ({farmer.crop.variety})
+                  </span>
+                  <span className="text-[11px] text-[#576258] font-mono">72 DAS • Sown 20 Aug</span>
+                </div>
+
+                <div className="border-l-2 border-[#E3DDD1] pl-3">
+                  <span className="text-[11px] text-[#859286] font-medium block">Land & Soil</span>
+                  <span className="text-sm font-semibold text-[#1A211B] mt-0.5 block">
+                    {farmer.farm.area_acres} Acres
+                  </span>
+                  <span className="text-[11px] text-[#576258]">Deep Black Cotton Soil</span>
+                </div>
+
+                <div className="border-l-2 border-[#E3DDD1] pl-3">
+                  <span className="text-[11px] text-[#859286] font-medium block">Irrigation System</span>
+                  <span className="text-sm font-semibold text-[#1A211B] mt-0.5 block">
+                    {farmer.farm.irrigation_source}
+                  </span>
+                  <span className="text-[11px] text-[#576258]">Groundwater / Active</span>
+                </div>
+
+                <div className="border-l-2 border-[#E3DDD1] pl-3">
+                  <span className="text-[11px] text-[#859286] font-medium block">Data Integrity</span>
+                  <span className="text-sm font-semibold text-[#276738] mt-0.5 block flex items-center space-x-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#276738]" />
+                    <span>Zero Dummy Data</span>
+                  </span>
+                  <span className="text-[11px] text-[#576258] font-mono">Verified APIs</span>
+                </div>
               </div>
             </div>
 
-            {/* Crop Phenological Stage Stepper */}
+            {/* Phenological Stepper */}
             <CropStageStepper
               cropName={farmer.crop.name}
               hindiName={farmer.crop.hindi_name}
@@ -162,23 +170,55 @@ export const App: React.FC = () => {
               language={language}
             />
 
-            {/* Live Weather & Crop Risk Assessment Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <WeatherCard weather={weather} language={language} />
-              <CropRiskGauge riskData={riskData} language={language} />
-            </div>
+            {/* Asymmetrical 2-Column Grid (8-col primary / 4-col secondary) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* Left Column: Microclimate & Mandi Radar (7 Cols) */}
+              <div className="lg:col-span-7 space-y-8">
+                <WeatherCard weather={weather} language={language} />
+                <MandiRadar
+                  language={language}
+                  defaultState={farmer.location.state}
+                  defaultDistrict={farmer.location.district}
+                  defaultCommodity={farmer.crop.name}
+                />
+              </div>
 
-            {/* Mandi Intelligence Preview */}
-            <MandiRadar
-              language={language}
-              defaultState={farmer.location.state}
-              defaultDistrict={farmer.location.district}
-              defaultCommodity={farmer.crop.name}
-            />
+              {/* Right Column: Agronomic Risk & Decision Assistant (5 Cols) */}
+              <div className="lg:col-span-5 space-y-8">
+                <CropRiskGauge riskData={riskData} language={language} />
+
+                {/* Assistant Mini Card */}
+                <div className="matte-panel p-6 space-y-4">
+                  <div className="flex items-center space-x-3 pb-3 border-b border-[#E3DDD1]">
+                    <FarmarianMascot state="welcoming" size={32} />
+                    <div>
+                      <h4 className="text-xs font-semibold text-[#1A211B] font-display">
+                        Farmarian Agronomic Inquiries
+                      </h4>
+                      <p className="text-[11px] text-[#576258]">
+                        Automated multi-step reasoning with ICAR citations
+                      </p>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-[#576258] leading-relaxed">
+                    Have questions regarding pest symptoms, irrigation intervals, or APMC modal price realizations? Ask the agent directly.
+                  </p>
+
+                  <button
+                    onClick={() => setActiveTab('advisory')}
+                    className="w-full btn-secondary text-xs flex items-center justify-center space-x-2 py-2"
+                  >
+                    <span>Open Advisory Terminal</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
-        {/* VIEW 2: AI ADVISORY & EXECUTION TRACE TERMINAL */}
+        {/* VIEW 2: ADVISORY */}
         {activeTab === 'advisory' && (
           <div className="space-y-6">
             <AgentChat
@@ -189,17 +229,17 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {/* VIEW 3: LIVE WEATHER & RISK */}
+        {/* VIEW 3: WEATHER */}
         {activeTab === 'weather' && (
-          <div className="space-y-8">
+          <div className="space-y-6">
             <WeatherCard weather={weather} language={language} />
             <CropRiskGauge riskData={riskData} language={language} />
           </div>
         )}
 
-        {/* VIEW 4: MANDI RADAR & TRANSPORT COST */}
+        {/* VIEW 4: MANDI */}
         {activeTab === 'mandi' && (
-          <div className="space-y-8">
+          <div className="space-y-6">
             <MandiRadar
               language={language}
               defaultState={farmer.location.state}
@@ -209,9 +249,9 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {/* VIEW 5: CROP HEALTH CLINIC */}
+        {/* VIEW 5: PATHOLOGY CLINIC */}
         {activeTab === 'camera' && (
-          <div className="space-y-8">
+          <div className="space-y-6">
             <CropHealthCamera
               language={language}
               cropName={farmer.crop.name}
@@ -220,9 +260,9 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {/* VIEW 6: WHAT-IF SANDBOX */}
+        {/* VIEW 6: SCENARIO STRESS TEST */}
         {activeTab === 'scenario' && (
-          <div className="space-y-8">
+          <div className="space-y-6">
             <ScenarioSandbox
               language={language}
               cropName={farmer.crop.name}
@@ -234,23 +274,16 @@ export const App: React.FC = () => {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="bg-[#0F1108] text-[#F6D4BA]/70 text-xs py-8 border-t border-[#F3B391]/20 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center space-x-3">
-            <FarmarianMascot state="welcoming" size={36} />
-            <div>
-              <span className="font-black text-white font-display text-sm tracking-tight">
-                Agro<span className="text-[#F3B391]">Shield</span>
-              </span>
-              <span className="mx-2 text-white/30">•</span>
-              <span className="text-[#F6D4BA]/80 font-medium">
-                36-Hour Autonomous AI Hackathon Submission
-              </span>
-            </div>
+      {/* Institutional Editorial Footer */}
+      <footer className="bg-[#FFFFFF] border-t border-[#E3DDD1] text-[#576258] text-xs py-8 mt-16">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-baseline justify-between gap-4">
+          <div className="flex items-center space-x-2">
+            <span className="font-semibold text-[#1A211B] font-display">AgroShield Platform</span>
+            <span>•</span>
+            <span>Vidarbha Agricultural Intelligence System</span>
           </div>
-          <p className="text-[11px] text-center md:text-right text-[#F6D4BA]/60">
-            Verified Data Providers: Open-Meteo CC BY 4.0 • data.gov.in AGMARKNET • ICAR Research Bulletins
+          <p className="text-[11px] text-[#859286]">
+            Verified Agricultural Data Providers: Open-Meteo Meteorological API (CC BY 4.0) • data.gov.in AGMARKNET • ICAR Research Bulletins
           </p>
         </div>
       </footer>

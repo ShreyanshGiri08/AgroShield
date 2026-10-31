@@ -3,90 +3,77 @@
 @tailwind utilities;
 
 :root {
-  --color-pitch: #0F1108;
-  --color-coffee: #241909;
-  --color-peach: #F3B391;
-  --color-sand: #F6D4BA;
-  --color-cornsilk: #FEFADC;
+  --canvas-bg: #F8F7F4;
+  --canvas-surface: #FFFFFF;
+  --canvas-border: #E3DDD1;
+  --ink-primary: #1A211B;
+  --ink-secondary: #576258;
+  --accent-main: #1E472D;
+  --accent-warm: #C27847;
 }
 
 body {
   margin: 0;
   padding: 0;
-  background-color: #0D0F07;
-  background-image: 
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(243, 179, 145, 0.15), transparent),
-    radial-gradient(circle at 85% 30%, rgba(36, 25, 9, 0.6), transparent 50%),
-    radial-gradient(circle at 15% 70%, rgba(246, 212, 186, 0.05), transparent 40%);
-  background-attachment: fixed;
-  color: #FEFADC;
-  font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--canvas-bg);
+  color: var(--ink-primary);
+  font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Luxury Dark Glassmorphic Card System */
-.agri-card {
-  background: rgba(30, 22, 12, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(243, 179, 145, 0.18);
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(254, 250, 220, 0.03);
-  border-radius: 1.5rem;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  color: #FEFADC;
+/* Institutional Matte Panels */
+.matte-panel {
+  background-color: #FFFFFF;
+  border: 1px solid var(--canvas-border);
+  border-radius: 0.75rem; /* 12px clean corners */
+  box-shadow: 0 1px 3px rgba(26, 33, 27, 0.04), 0 4px 12px rgba(26, 33, 27, 0.02);
 }
 
-.agri-card:hover {
-  border-color: rgba(243, 179, 145, 0.45);
-  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.6), 0 0 20px -4px rgba(243, 179, 145, 0.15);
-  transform: translateY(-2px);
+/* Restrained Primary Action Button */
+.btn-primary {
+  background-color: #1E472D;
+  color: #F8F7F4;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.8125rem;
+  transition: background-color 0.15s ease;
 }
 
-.agri-card-dark {
-  background: linear-gradient(135deg, rgba(36, 25, 9, 0.95) 0%, rgba(15, 17, 8, 0.98) 100%);
-  border: 1px solid rgba(243, 179, 145, 0.3);
-  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(254, 250, 220, 0.1);
-  border-radius: 1.75rem;
-  color: #FEFADC;
+.btn-primary:hover {
+  background-color: #153320;
 }
 
-/* Inner metric tiles */
-.metric-tile {
-  background: rgba(15, 17, 8, 0.6);
-  border: 1px solid rgba(246, 212, 186, 0.15);
-  border-radius: 1rem;
-  transition: all 0.2s ease;
+/* Secondary Button */
+.btn-secondary {
+  background-color: #FFFFFF;
+  color: #1A211B;
+  border: 1px solid var(--canvas-border);
+  font-weight: 600;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.8125rem;
+  transition: all 0.15s ease;
 }
 
-.metric-tile:hover {
-  background: rgba(36, 25, 9, 0.6);
-  border-color: rgba(243, 179, 145, 0.35);
+.btn-secondary:hover {
+  background-color: #F8F7F4;
+  border-color: #CFC5B4;
 }
 
-/* Custom scrollbars */
+/* Custom restrained scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #0D0F07;
+  background: #F8F7F4;
 }
 ::-webkit-scrollbar-thumb {
-  background: #241909;
-  border: 1px solid rgba(243, 179, 145, 0.3);
-  border-radius: 9999px;
+  background: #D5CCBE;
+  border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #F3B391;
-}
-
-/* Animations */
-@keyframes pulse-slow {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.05); opacity: 0.85; }
-}
-
-.animate-pulse-slow {
-  animation: pulse-slow 3s ease-in-out infinite;
+  background: #B5A896;
 }
