@@ -1,3 +1,11 @@
+import sys
+import os
+
+# Guarantee root directory is on Python path
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.app.core.config import settings
