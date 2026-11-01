@@ -93,7 +93,7 @@ export const ScenarioSandbox: React.FC<ScenarioSandboxProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E8C99A] pb-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-[#241909] flex items-center gap-2.5">
+          <h2 className="text-xl sm:text-2xl font-semibold text-[#241909] flex items-center gap-2.5">
             <SlidersHorizontal className="w-6 h-6 text-[#E07B39]" />
             <span>{tx.title}</span>
           </h2>
@@ -105,17 +105,17 @@ export const ScenarioSandbox: React.FC<ScenarioSandboxProps> = ({
       </div>
 
       {/* Honest Simulation Disclaimer Notice */}
-      <div className="p-4 bg-[#FBF2E9] border-2 border-[#995A1E]/30 rounded-2xl text-xs sm:text-sm font-semibold text-[#995A1E] flex items-start gap-3">
+      <div className="p-4 bg-[#FBF2E9] border-2 border-[#995A1E]/30 rounded-xl text-xs sm:text-sm font-semibold text-[#995A1E] flex items-start gap-3">
         <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
         <p className="leading-relaxed">{tx.notice}</p>
       </div>
 
       {/* Controls Sliders */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#FEFADC] p-6 rounded-2xl border-2 border-[#E8C99A]">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#FEFADC] p-6 rounded-xl border border-[#E8C99A]">
         <div>
           <div className="flex justify-between items-baseline mb-2">
-            <span className="text-sm font-extrabold text-[#241909]">{tx.rainLabel}</span>
-            <span className="text-base font-extrabold text-[#E07B39]">+{deltaRain} mm</span>
+            <span className="text-sm font-semibold text-[#241909]">{tx.rainLabel}</span>
+            <span className="text-base font-semibold text-[#E07B39]">+{deltaRain} mm</span>
           </div>
           <input
             type="range"
@@ -135,8 +135,8 @@ export const ScenarioSandbox: React.FC<ScenarioSandboxProps> = ({
 
         <div>
           <div className="flex justify-between items-baseline mb-2">
-            <span className="text-sm font-extrabold text-[#241909]">{tx.tempLabel}</span>
-            <span className="text-base font-extrabold text-[#E07B39]">
+            <span className="text-sm font-semibold text-[#241909]">{tx.tempLabel}</span>
+            <span className="text-base font-semibold text-[#E07B39]">
               {deltaTemp > 0 ? `+${deltaTemp}` : deltaTemp}°C
             </span>
           </div>
@@ -160,7 +160,7 @@ export const ScenarioSandbox: React.FC<ScenarioSandboxProps> = ({
       {/* Preset Buttons & Submit */}
       <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-extrabold text-[#5C4A30] uppercase tracking-wide">
+          <span className="text-xs font-semibold text-[#5C4A30] uppercase tracking-wide">
             {tx.presetsTitle}
           </span>
           <button
@@ -189,7 +189,7 @@ export const ScenarioSandbox: React.FC<ScenarioSandboxProps> = ({
         <button
           onClick={handleSimulate}
           disabled={isSimulating}
-          className="btn-primary py-3 px-6 text-sm font-extrabold flex items-center gap-2 shadow-md"
+          className="btn-primary py-3 px-6 text-sm font-semibold flex items-center gap-2 shadow-md"
         >
           {isSimulating ? (
             <>
@@ -208,16 +208,16 @@ export const ScenarioSandbox: React.FC<ScenarioSandboxProps> = ({
       {/* Outcome Cards */}
       {simulationResult && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-3">
-          <div className="p-5 rounded-2xl border-2 border-[#E8C99A] bg-[#FEFADC] space-y-2.5 shadow-sm">
+          <div className="p-5 rounded-xl border border-[#E8C99A] bg-[#FEFADC] space-y-2.5 shadow-sm">
             <div className="flex justify-between items-baseline border-b border-[#E8C99A] pb-2">
-              <span className="font-extrabold text-sm text-[#5C4A30] uppercase tracking-wide">
+              <span className="font-semibold text-sm text-[#5C4A30] uppercase tracking-wide">
                 {tx.baselineTitle}
               </span>
               <span className="font-bold text-sm text-[#3A7D44]">
                 {tx.score} {simulationResult.baseline?.risk_score ?? 10}/100
               </span>
             </div>
-            <p className="text-base font-extrabold text-[#3A7D44]">
+            <p className="text-base font-semibold text-[#3A7D44]">
               {simulationResult.baseline?.risk_level ?? 'LOW'} {isHi ? 'जोखिम (सुरक्षित)' : 'RISK (SAFE)'}
             </p>
             <p className="text-xs sm:text-sm font-medium text-[#5C4A30] leading-relaxed">
@@ -227,16 +227,16 @@ export const ScenarioSandbox: React.FC<ScenarioSandboxProps> = ({
             </p>
           </div>
 
-          <div className="p-5 rounded-2xl border-2 border-red-300 bg-red-50 space-y-2.5 shadow-sm">
+          <div className="p-5 rounded-xl border-2 border-red-300 bg-red-50 space-y-2.5 shadow-sm">
             <div className="flex justify-between items-baseline border-b border-red-200 pb-2">
-              <span className="font-extrabold text-sm text-red-900 uppercase tracking-wide">
+              <span className="font-semibold text-sm text-red-900 uppercase tracking-wide">
                 {tx.scenarioTitle}
               </span>
               <span className="font-bold text-sm text-red-800">
                 {tx.score} {simulationResult.scenario?.risk_score ?? 65}/100
               </span>
             </div>
-            <p className="text-base font-extrabold text-red-700">
+            <p className="text-base font-semibold text-red-700">
               {simulationResult.scenario?.risk_level ?? 'ELEVATED'} {isHi ? 'तनाव' : 'RISK'}
             </p>
             <p className="text-xs sm:text-sm font-semibold text-red-900 leading-relaxed">

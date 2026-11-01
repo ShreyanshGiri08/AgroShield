@@ -60,10 +60,10 @@ class AgroErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState
             <div className="w-12 h-12 bg-[#241909] text-[#FEFADC] rounded-full mx-auto flex items-center justify-center font-bold">
               <Leaf className="w-6 h-6 text-[#F3B391]" />
             </div>
-            <h2 className="text-xl font-bold text-[#241909]">
+            <h2 className="text-xl font-semibold text-[#241909]">
               खेत डैशबोर्ड लोड करने में समस्या हुई
             </h2>
-            <p className="text-xs text-[#5C4A30] leading-relaxed">
+            <p className="text-xs text-[#7A6A50] leading-relaxed">
               पुराने डेटा को रीसेट करके दोबारा लॉग इन करने के लिए नीचे दिए गए बटन पर क्लिक करें।
             </p>
             <div className="p-3 bg-[#FEFADC] rounded-lg text-xs font-mono text-[#C0392B] overflow-x-auto text-left">
@@ -353,14 +353,14 @@ const AppInner: React.FC = () => {
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <MapPin className="w-4 h-4 text-[#E07B39]" />
-                      <span className="text-xs font-semibold text-[#5C4A30] uppercase tracking-wider">
+                      <span className="text-xs text-[#7A6A50] uppercase tracking-wide">
                         {safeLocation.village}, {safeLocation.district} • {safeLocation.state}
                       </span>
                     </div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-[#241909] tracking-tight">
+                    <h1 className="text-2xl font-semibold text-[#241909]">
                       {language === 'hi' ? `नमस्ते, ${safeFullName}!` : `Hello, ${safeFullName}!`}
                     </h1>
-                    <p className="text-sm text-[#5C4A30] mt-1">{tx.farmIntel}</p>
+                    <p className="text-sm text-[#7A6A50] mt-1">{tx.farmIntel}</p>
                   </div>
                   <div className="flex items-center space-x-3 flex-shrink-0">
                     <button onClick={() => setActiveTab('advisory')} className="btn-primary flex items-center space-x-2">
@@ -376,7 +376,7 @@ const AppInner: React.FC = () => {
                 {/* MULTI-CROP SELECTOR BAR */}
                 <div className="pt-4 pb-2 border-b border-[#E8C99A] flex flex-wrap items-center justify-between gap-3">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-xs font-bold text-[#241909] flex items-center gap-1.5 mr-1">
+                    <span className="text-xs font-semibold text-[#5C4A30] flex items-center gap-1.5 mr-1">
                       <Leaf className="w-4 h-4 text-[#3A7D44]" />
                       {tx.allCrops}:
                     </span>
@@ -387,9 +387,9 @@ const AppInner: React.FC = () => {
                         <button
                           key={i}
                           onClick={() => setActiveCrop(c)}
-                          className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all border flex items-center gap-1.5 ${
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border flex items-center gap-1.5 ${
                             isSelected
-                              ? 'bg-[#241909] text-[#FEFADC] border-[#241909] shadow-md scale-[1.02]'
+                              ? 'bg-[#241909] text-[#FEFADC] border-[#241909]'
                               : 'bg-[#FEFADC] text-[#5C4A30] border-[#E8C99A] hover:bg-[#F3B391] hover:text-[#241909]'
                           }`}
                         >
@@ -403,7 +403,7 @@ const AppInner: React.FC = () => {
 
                   <button
                     onClick={() => setShowAddCropModal(true)}
-                    className="px-3 py-1.5 rounded-xl bg-[#F3B391] hover:bg-[#E8A070] text-[#241909] border border-[#E07B39] font-bold text-xs flex items-center gap-1 shadow-sm transition-all"
+                    className="px-3 py-1.5 rounded-lg bg-[#F3B391] hover:bg-[#E8A070] text-[#241909] border border-[#E07B39] font-medium text-xs flex items-center gap-1 transition-colors"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>{tx.addCropBtn}</span>
@@ -413,35 +413,35 @@ const AppInner: React.FC = () => {
                 {/* 4-Item Context Data Bar */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
                   <div className="bg-[#FEFADC] rounded-xl p-4 border border-[#E8C99A]">
-                    <span className="text-xs sm:text-sm text-[#5C4A30] font-extrabold block mb-1">
+                    <span className="text-xs text-[#7A6A50] font-medium block mb-1">
                       <Leaf className="w-3.5 h-3.5 inline mr-1 text-[#3A7D44]" />
                       {tx.cultivatedCrop}
                     </span>
-                    <span className="text-base sm:text-lg font-black text-[#241909] block">
+                    <span className="text-base font-semibold text-[#241909] block">
                       {language === 'hi' ? currentCrop.hindi_name || currentCrop.name : currentCrop.name}
                       {currentCrop.variety ? ` • ${currentCrop.variety}` : ''}
                     </span>
-                    <span className="text-xs sm:text-sm text-[#5C4A30] font-bold block mt-0.5">
+                    <span className="text-xs text-[#7A6A50] block mt-0.5">
                       {language === 'hi' ? `बुवाई: ${currentCrop.sowing_date || 'N/A'}` : `Sown: ${currentCrop.sowing_date || 'N/A'}`}
                     </span>
                   </div>
                   <div className="bg-[#FEFADC] rounded-xl p-4 border border-[#E8C99A]">
-                    <span className="text-xs sm:text-sm text-[#5C4A30] font-extrabold block mb-1">{tx.landSoil}</span>
-                    <span className="text-base sm:text-lg font-black text-[#241909] block">{safeFarm.area_acres} {tx.acres}</span>
-                    <span className="text-xs sm:text-sm text-[#5C4A30] font-bold block mt-0.5">{safeFarm.soil_type}</span>
+                    <span className="text-xs text-[#7A6A50] font-medium block mb-1">{tx.landSoil}</span>
+                    <span className="text-base font-semibold text-[#241909] block">{safeFarm.area_acres} {tx.acres}</span>
+                    <span className="text-xs text-[#7A6A50] block mt-0.5">{safeFarm.soil_type}</span>
                   </div>
                   <div className="bg-[#FEFADC] rounded-xl p-4 border border-[#E8C99A]">
-                    <span className="text-xs sm:text-sm text-[#5C4A30] font-extrabold block mb-1">{tx.irrigationSystem}</span>
-                    <span className="text-base sm:text-lg font-black text-[#241909] block">{safeFarm.irrigation_source}</span>
+                    <span className="text-xs text-[#7A6A50] font-medium block mb-1">{tx.irrigationSystem}</span>
+                    <span className="text-base font-semibold text-[#241909] block">{safeFarm.irrigation_source}</span>
                     <span className="text-xs sm:text-sm text-[#3A7D44] font-black block mt-0.5">{tx.active}</span>
                   </div>
                   <div className="bg-[#FEFADC] rounded-xl p-4 border border-[#E8C99A]">
-                    <span className="text-xs sm:text-sm text-[#5C4A30] font-extrabold block mb-1">{tx.dataIntegrity}</span>
-                    <span className="text-base sm:text-lg font-black text-[#3A7D44] flex items-center gap-1">
+                    <span className="text-xs text-[#7A6A50] font-medium block mb-1">{tx.dataIntegrity}</span>
+                    <span className="text-base font-bold text-[#3A7D44] flex items-center gap-1">
                       <ShieldCheck className="w-4 h-4" />
                       {tx.zeroMock}
                     </span>
-                    <span className="text-xs sm:text-sm text-[#5C4A30] font-bold block mt-0.5">{tx.verifiedApis}</span>
+                    <span className="text-xs text-[#7A6A50] block mt-0.5">{tx.verifiedApis}</span>
                   </div>
                 </div>
               </div>
@@ -473,8 +473,8 @@ const AppInner: React.FC = () => {
                     <div className="flex items-center space-x-3 pb-3 border-b border-[#E8C99A]">
                       <FarmarianMascot state="welcoming" size={36} />
                       <div>
-                        <h4 className="text-sm font-bold text-[#241909]">{tx.farmarianTitle}</h4>
-                        <p className="text-xs text-[#5C4A30]">{tx.farmarianDesc}</p>
+                        <h4 className="text-sm font-semibold text-[#241909]">{tx.farmarianTitle}</h4>
+                        <p className="text-xs text-[#7A6A50]">{tx.farmarianDesc}</p>
                       </div>
                     </div>
                     <p className="text-sm text-[#5C4A30] leading-relaxed">{tx.farmarianPrompt}</p>
@@ -531,8 +531,8 @@ const AppInner: React.FC = () => {
 
       {/* MODAL: ADD ANOTHER CROP */}
       {showAddCropModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#F6D4BA] border-2 border-[#E8C99A] rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+          <div className="bg-[#F6D4BA] border border-[#E8C99A] rounded-xl max-w-md w-full p-6 shadow-xl relative">
             <button
               onClick={() => setShowAddCropModal(false)}
               className="absolute right-4 top-4 text-[#5C4A30] hover:text-[#241909]"
@@ -540,19 +540,19 @@ const AppInner: React.FC = () => {
               <X className="w-5 h-5" />
             </button>
 
-            <h3 className="text-lg font-bold text-[#241909] mb-1">{tx.modalTitle}</h3>
-            <p className="text-xs text-[#5C4A30] mb-4">{tx.modalDesc}</p>
+            <h3 className="text-base font-semibold text-[#241909] mb-1">{tx.modalTitle}</h3>
+            <p className="text-xs text-[#7A6A50] mb-4">{tx.modalDesc}</p>
 
             <form onSubmit={handleAddCropSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-[#241909] mb-1">{tx.selectCrop}</label>
+                <label className="block text-xs font-semibold text-[#241909] mb-1">{tx.selectCrop}</label>
                 <div className="grid grid-cols-2 gap-2">
                   {CATALOG_CROPS.map((c) => (
                     <button
                       key={c.name}
                       type="button"
                       onClick={() => setNewCropName(c.name)}
-                      className={`p-3 rounded-xl border text-xs sm:text-sm font-extrabold flex items-center justify-center gap-1.5 transition-all ${
+                      className={`p-2.5 rounded-lg border text-xs font-medium flex items-center justify-center gap-1.5 transition-colors ${
                         newCropName === c.name
                           ? 'bg-[#241909] text-[#FEFADC] border-[#241909] shadow-sm'
                           : 'bg-[#FEFADC] text-[#5C4A30] border-[#E8C99A] hover:bg-[#F3B391]'
@@ -565,7 +565,7 @@ const AppInner: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#241909] mb-1">{tx.varietyLabel}</label>
+                <label className="block text-xs font-semibold text-[#241909] mb-1">{tx.varietyLabel}</label>
                 <input
                   type="text"
                   value={newCropVariety}
@@ -576,7 +576,7 @@ const AppInner: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#241909] mb-1">{tx.sowingDateLabel}</label>
+                <label className="block text-xs font-semibold text-[#241909] mb-1">{tx.sowingDateLabel}</label>
                 <input
                   type="date"
                   value={newCropSowingDate}
@@ -596,14 +596,14 @@ const AppInner: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddCropModal(false)}
-                  className="flex-1 py-2.5 rounded-xl border border-[#E8C99A] bg-[#FEFADC] text-[#5C4A30] text-xs font-bold"
+                  className="flex-1 py-2.5 rounded-lg border border-[#E8C99A] bg-[#FEFADC] text-[#5C4A30] text-xs font-medium"
                 >
                   {tx.cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={addingCropLoading}
-                  className="flex-1 py-2.5 rounded-xl bg-[#F3B391] hover:bg-[#E8A070] text-[#241909] border border-[#E07B39] text-xs font-extrabold shadow disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-lg bg-[#F3B391] hover:bg-[#E8A070] text-[#241909] border border-[#E07B39] text-xs font-semibold disabled:opacity-50"
                 >
                   {addingCropLoading ? 'Adding…' : tx.saveCrop}
                 </button>
@@ -617,7 +617,7 @@ const AppInner: React.FC = () => {
       <footer className="border-t border-[#E8C99A] text-[#5C4A30] text-xs py-6 mt-8" style={{ backgroundColor: '#F6D4BA' }}>
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center space-x-2">
-            <span className="font-bold text-[#241909]">AgroShield Platform</span>
+            <span className="font-semibold text-[#241909]">AgroShield Platform</span>
             <span>•</span>
             <span>{language === 'hi' ? 'किसान का स्मार्ट सुरक्षा कवच' : 'Hyperlocal Agricultural Intelligence'}</span>
           </div>

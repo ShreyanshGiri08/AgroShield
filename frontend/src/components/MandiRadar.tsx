@@ -215,7 +215,7 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
       {/* ─── Top Header & Sub-Tabs ─── */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#E8C99A] pb-5">
         <div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-[#241909] flex items-center gap-2.5">
+          <h2 className="text-xl sm:text-2xl font-semibold text-[#241909] flex items-center gap-2.5">
             <Scale className="w-6 h-6 text-[#E07B39]" />
             <span>{tx.title}</span>
           </h2>
@@ -226,7 +226,7 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
         <div className="flex items-center bg-[#FEFADC] p-1.5 rounded-xl border border-[#E8C99A] flex-shrink-0">
           <button
             onClick={() => setActiveSubTab('arrivals')}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-extrabold transition-all ${
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
               activeSubTab === 'arrivals'
                 ? 'bg-[#241909] text-[#FEFADC] shadow-sm'
                 : 'text-[#5C4A30] hover:text-[#241909]'
@@ -237,7 +237,7 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
           </button>
           <button
             onClick={() => setActiveSubTab('prediction')}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-extrabold transition-all ${
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
               activeSubTab === 'prediction'
                 ? 'bg-[#241909] text-[#FEFADC] shadow-sm'
                 : 'text-[#5C4A30] hover:text-[#241909]'
@@ -250,8 +250,8 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
       </div>
 
       {/* ─── 1-Click Quick Crop Selector Pills ─── */}
-      <div className="bg-[#FEFADC] p-4 rounded-2xl border-2 border-[#E8C99A] space-y-2.5">
-        <span className="text-xs font-extrabold text-[#5C4A30] uppercase tracking-wider block">
+      <div className="bg-[#FEFADC] p-4 rounded-xl border border-[#E8C99A] space-y-2.5">
+        <span className="text-xs font-semibold text-[#5C4A30] uppercase tracking-wider block">
           {tx.quickSelect}
         </span>
         <div className="flex flex-wrap gap-2">
@@ -261,9 +261,9 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
               <button
                 key={crop.name}
                 onClick={() => handleSelectQuickCrop(crop.name)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all border flex items-center gap-1.5 ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-colors border flex items-center gap-1.5 ${
                   isSelected
-                    ? 'bg-[#241909] text-[#FEFADC] border-[#241909] shadow-md scale-[1.02]'
+                    ? 'bg-[#241909] text-[#FEFADC] border-[#241909] shadow-md '
                     : 'bg-[#FFFDF5] text-[#5C4A30] border-[#E8C99A] hover:bg-[#F3B391] hover:text-[#241909]'
                 }`}
               >
@@ -276,9 +276,9 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
       </div>
 
       {/* ─── Query Location & Crop Inputs ─── */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-[#FEFADC] p-4 sm:p-5 rounded-2xl border-2 border-[#E8C99A]">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-[#FEFADC] p-4 sm:p-5 rounded-xl border border-[#E8C99A]">
         <div>
-          <label className="block text-xs sm:text-sm font-extrabold text-[#241909] mb-1.5">{tx.state}</label>
+          <label className="block text-xs sm:text-sm font-semibold text-[#241909] mb-1.5">{tx.state}</label>
           <input
             type="text"
             value={state}
@@ -287,7 +287,7 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
           />
         </div>
         <div>
-          <label className="block text-xs sm:text-sm font-extrabold text-[#241909] mb-1.5">{tx.district}</label>
+          <label className="block text-xs sm:text-sm font-semibold text-[#241909] mb-1.5">{tx.district}</label>
           <input
             type="text"
             value={district}
@@ -296,7 +296,7 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
           />
         </div>
         <div>
-          <label className="block text-xs sm:text-sm font-extrabold text-[#241909] mb-1.5">{tx.commodity}</label>
+          <label className="block text-xs sm:text-sm font-semibold text-[#241909] mb-1.5">{tx.commodity}</label>
           <input
             type="text"
             value={commodity}
@@ -309,7 +309,7 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
       <button
         onClick={() => loadPricesAndPrediction()}
         disabled={loading}
-        className="btn-primary w-full py-3.5 text-sm sm:text-base font-extrabold flex items-center justify-center gap-2 shadow-md"
+        className="btn-primary w-full py-3.5 text-sm sm:text-base font-semibold flex items-center justify-center gap-2 shadow-md"
       >
         <Search className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
         <span>{loading ? tx.searching : tx.search}</span>
@@ -330,8 +330,8 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
           {records.length > 0 ? (
             <>
               {/* Recharts Bar Chart */}
-              <div className="agro-card-warm p-5 sm:p-6 rounded-2xl border-2 border-[#E8C99A] space-y-4">
-                <span className="text-xs sm:text-sm font-extrabold text-[#5C4A30] uppercase tracking-wide block">
+              <div className="agro-card-warm p-5 sm:p-6 rounded-xl border border-[#E8C99A] space-y-4">
+                <span className="text-xs sm:text-sm font-semibold text-[#5C4A30] uppercase tracking-wide block">
                   {tx.chartLabel}
                 </span>
                 <div className="h-64 w-full">
@@ -373,26 +373,26 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
               </div>
 
               {/* Data Table */}
-              <div className="overflow-x-auto rounded-2xl border-2 border-[#E8C99A] shadow-sm">
+              <div className="overflow-x-auto rounded-xl border border-[#E8C99A] shadow-sm">
                 <table className="w-full text-left text-sm sm:text-base">
-                  <thead className="bg-[#F6D4BA] text-[#5C4A30] uppercase font-extrabold text-xs sm:text-sm tracking-wider border-b-2 border-[#E8C99A]">
+                  <thead className="bg-[#F6D4BA] text-[#5C4A30] uppercase font-semibold text-xs sm:text-sm tracking-wider border-b-2 border-[#E8C99A]">
                     <tr>
                       <th className="p-4">{tx.market}</th>
                       <th className="p-4">{tx.districtCol}</th>
                       <th className="p-4">{tx.minPrice}</th>
                       <th className="p-4">{tx.maxPrice}</th>
-                      <th className="p-4 text-[#241909] font-black">{tx.modalPrice}</th>
+                      <th className="p-4 text-[#241909] font-bold">{tx.modalPrice}</th>
                       <th className="p-4">{tx.reportedOn}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#E8C99A] bg-[#FEFADC]">
                     {records.map((r: any, idx: number) => (
                       <tr key={idx} className="hover:bg-[#F6D4BA]/60 transition-colors">
-                        <td className="p-4 font-extrabold text-[#241909]">{r.market}</td>
+                        <td className="p-4 font-semibold text-[#241909]">{r.market}</td>
                         <td className="p-4 font-bold text-[#5C4A30]">{r.district}</td>
                         <td className="p-4 font-mono font-bold text-[#5C4A30]">₹{r.min_price}</td>
                         <td className="p-4 font-mono font-bold text-[#5C4A30]">₹{r.max_price}</td>
-                        <td className="p-4 font-mono font-black text-[#1E472D] text-lg">₹{r.modal_price}</td>
+                        <td className="p-4 font-mono font-bold text-[#1E472D] text-lg">₹{r.modal_price}</td>
                         <td className="p-4 text-[#5C4A30] text-xs sm:text-sm font-mono font-bold">
                           {r.arrival_date || (isHi ? 'आज' : 'Today')}
                         </td>
@@ -403,9 +403,9 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
               </div>
 
               {/* Transportation Net Realization Calculator */}
-              <div className="agro-card-warm p-5 sm:p-6 rounded-2xl border-2 border-[#E8C99A] space-y-4">
+              <div className="agro-card-warm p-5 sm:p-6 rounded-xl border border-[#E8C99A] space-y-4">
                 <div className="border-b border-[#E8C99A] pb-3">
-                  <h4 className="text-base sm:text-lg font-extrabold text-[#241909] flex items-center gap-2">
+                  <h4 className="text-base sm:text-lg font-semibold text-[#241909] flex items-center gap-2">
                     <Truck className="w-5 h-5 text-[#3A7D44]" />
                     <span>{tx.freightCalc}</span>
                   </h4>
@@ -414,8 +414,8 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-sm font-bold text-[#241909]">
                   <div>
-                    <label className="block mb-1.5 text-xs sm:text-sm font-extrabold text-[#5C4A30]">
-                      {tx.distance} <span className="text-base font-black text-[#241909]">{distanceKm} {tx.km}</span>
+                    <label className="block mb-1.5 text-xs sm:text-sm font-semibold text-[#5C4A30]">
+                      {tx.distance} <span className="text-base font-bold text-[#241909]">{distanceKm} {tx.km}</span>
                     </label>
                     <input
                       type="range"
@@ -428,8 +428,8 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
                   </div>
 
                   <div>
-                    <label className="block mb-1.5 text-xs sm:text-sm font-extrabold text-[#5C4A30]">
-                      {tx.freightRate} <span className="text-base font-black text-[#241909]">₹{freightRate}/km</span>
+                    <label className="block mb-1.5 text-xs sm:text-sm font-semibold text-[#5C4A30]">
+                      {tx.freightRate} <span className="text-base font-bold text-[#241909]">₹{freightRate}/km</span>
                     </label>
                     <input
                       type="range"
@@ -442,8 +442,8 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
                   </div>
 
                   <div>
-                    <label className="block mb-1.5 text-xs sm:text-sm font-extrabold text-[#5C4A30]">
-                      {tx.volume} <span className="text-base font-black text-[#241909]">{volumeQtl} {tx.qtl}</span>
+                    <label className="block mb-1.5 text-xs sm:text-sm font-semibold text-[#5C4A30]">
+                      {tx.volume} <span className="text-base font-bold text-[#241909]">{volumeQtl} {tx.qtl}</span>
                     </label>
                     <input
                       type="range"
@@ -456,10 +456,10 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
                   </div>
                 </div>
 
-                <div className="bg-[#FEFADC] border-2 border-[#E8C99A] rounded-xl p-4 flex flex-wrap items-center justify-between gap-3 text-sm font-bold">
+                <div className="bg-[#FEFADC] border border-[#E8C99A] rounded-xl p-4 flex flex-wrap items-center justify-between gap-3 text-sm font-bold">
                   <div>
                     <span className="text-[#5C4A30] font-semibold">{tx.overhead}</span>
-                    <span className="font-mono font-black text-[#C0392B] ml-2 text-base">
+                    <span className="font-mono font-bold text-[#C0392B] ml-2 text-base">
                       -₹{freightPerQtl} / {isHi ? 'क्विंटल' : 'Qtl'}
                     </span>
                     <span className="text-xs text-[#5C4A30] ml-1.5 font-semibold">({isHi ? 'कुल' : 'Total'} ₹{tripFreight})</span>
@@ -467,7 +467,7 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
 
                   <div>
                     <span className="text-[#5C4A30] font-semibold">{tx.netReturn}</span>
-                    <span className="font-mono font-black text-[#1E472D] ml-2 text-xl sm:text-2xl">
+                    <span className="font-mono font-bold text-[#1E472D] ml-2 text-xl sm:text-2xl">
                       ₹{Math.max(0, (bestModalPrice || 7200) - freightPerQtl)} / {isHi ? 'क्विंटल' : 'Qtl'}
                     </span>
                   </div>
@@ -475,7 +475,7 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
               </div>
             </>
           ) : !loading ? (
-            <div className="p-8 text-center bg-[#FEFADC] border-2 border-dashed border-[#E8C99A] rounded-2xl text-base font-bold text-[#5C4A30]">
+            <div className="p-8 text-center bg-[#FEFADC] border-2 border-dashed border-[#E8C99A] rounded-xl text-base font-bold text-[#5C4A30]">
               {tx.noData(commodity, district)}
             </div>
           ) : null}
@@ -489,17 +489,17 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
         <div className="space-y-6">
           {/* Hero KPI Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-[#FEFADC] rounded-2xl p-4 border-2 border-[#E8C99A]">
-              <span className="text-xs font-extrabold text-[#5C4A30] block mb-1">{tx.currModal}</span>
-              <span className="text-xl sm:text-2xl font-black text-[#241909] font-mono">
+            <div className="bg-[#FEFADC] rounded-xl p-4 border border-[#E8C99A]">
+              <span className="text-xs font-semibold text-[#5C4A30] block mb-1">{tx.currModal}</span>
+              <span className="text-xl sm:text-2xl font-bold text-[#241909] font-mono">
                 ₹{prediction.current_modal_price}
               </span>
               <span className="text-xs text-[#5C4A30] block mt-1">/ {isHi ? 'क्विंटल' : 'Quintal'}</span>
             </div>
 
-            <div className="bg-[#FEFADC] rounded-2xl p-4 border-2 border-[#E8C99A]">
-              <span className="text-xs font-extrabold text-[#5C4A30] block mb-1">{tx.mspFloor}</span>
-              <span className="text-xl sm:text-2xl font-black text-[#3A7D44] font-mono">
+            <div className="bg-[#FEFADC] rounded-xl p-4 border border-[#E8C99A]">
+              <span className="text-xs font-semibold text-[#5C4A30] block mb-1">{tx.mspFloor}</span>
+              <span className="text-xl sm:text-2xl font-bold text-[#3A7D44] font-mono">
                 ₹{prediction.msp_benchmark}
               </span>
               <span className="text-xs text-[#3A7D44] font-bold block mt-1 flex items-center gap-1">
@@ -508,9 +508,9 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
               </span>
             </div>
 
-            <div className="bg-[#FEFADC] rounded-2xl p-4 border-2 border-[#E8C99A]">
-              <span className="text-xs font-extrabold text-[#5C4A30] block mb-1">{tx.forecast14}</span>
-              <span className="text-xl sm:text-2xl font-black text-[#E07B39] font-mono">
+            <div className="bg-[#FEFADC] rounded-xl p-4 border border-[#E8C99A]">
+              <span className="text-xs font-semibold text-[#5C4A30] block mb-1">{tx.forecast14}</span>
+              <span className="text-xl sm:text-2xl font-bold text-[#E07B39] font-mono">
                 ₹{prediction.forecast_14d_price}
               </span>
               <span className="text-xs text-[#E07B39] font-bold block mt-1 flex items-center gap-1">
@@ -519,9 +519,9 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
               </span>
             </div>
 
-            <div className="bg-[#FEFADC] rounded-2xl p-4 border-2 border-[#E8C99A]">
-              <span className="text-xs font-extrabold text-[#5C4A30] block mb-1">{tx.expectedChange}</span>
-              <span className={`text-base sm:text-lg font-black uppercase flex items-center gap-1 ${
+            <div className="bg-[#FEFADC] rounded-xl p-4 border border-[#E8C99A]">
+              <span className="text-xs font-semibold text-[#5C4A30] block mb-1">{tx.expectedChange}</span>
+              <span className={`text-base sm:text-lg font-bold uppercase flex items-center gap-1 ${
                 prediction.trend_direction === 'RISING' ? 'text-[#3A7D44]' : 'text-[#5C4A30]'
               }`}>
                 {prediction.trend_direction === 'RISING' ? (
@@ -541,15 +541,15 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
           </div>
 
           {/* Actionable Sell vs. Hold Advisory Box */}
-          <div className="bg-[#FFFDF5] border-2 border-[#E8C99A] rounded-2xl p-6 space-y-3 shadow-sm">
+          <div className="bg-[#FFFDF5] border border-[#E8C99A] rounded-xl p-6 space-y-3 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E8C99A] pb-3">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-6 h-6 text-[#3A7D44]" />
-                <h3 className="text-lg sm:text-xl font-extrabold text-[#241909]">
+                <h3 className="text-lg sm:text-xl font-semibold text-[#241909]">
                   {tx.sellHoldTitle}
                 </h3>
               </div>
-              <span className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-black border tracking-wide uppercase ${
+              <span className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold border tracking-wide uppercase ${
                 prediction.recommendation.action === 'HOLD'
                   ? 'bg-amber-100 text-amber-900 border-amber-300'
                   : 'bg-green-100 text-green-900 border-green-300'
@@ -563,9 +563,9 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
           </div>
 
           {/* 14-Day Day-by-Day Forecast Curve Chart */}
-          <div className="agro-card-warm p-5 sm:p-6 rounded-2xl border-2 border-[#E8C99A] space-y-4">
+          <div className="agro-card-warm p-5 sm:p-6 rounded-xl border border-[#E8C99A] space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs sm:text-sm font-extrabold text-[#5C4A30] uppercase tracking-wide">
+              <span className="text-xs sm:text-sm font-semibold text-[#5C4A30] uppercase tracking-wide">
                 {tx.chartForecastLabel}
               </span>
               <span className="text-xs font-bold text-[#3A7D44]">
@@ -614,24 +614,24 @@ export const MandiRadar: React.FC<MandiRadarProps> = ({
           </div>
 
           {/* 14-Day Table */}
-          <div className="overflow-x-auto rounded-2xl border-2 border-[#E8C99A] shadow-sm">
+          <div className="overflow-x-auto rounded-xl border border-[#E8C99A] shadow-sm">
             <table className="w-full text-left text-sm sm:text-base">
-              <thead className="bg-[#F6D4BA] text-[#5C4A30] uppercase font-extrabold text-xs sm:text-sm tracking-wider border-b-2 border-[#E8C99A]">
+              <thead className="bg-[#F6D4BA] text-[#5C4A30] uppercase font-semibold text-xs sm:text-sm tracking-wider border-b-2 border-[#E8C99A]">
                 <tr>
                   <th className="p-3.5">{tx.dayCol}</th>
                   <th className="p-3.5">{tx.dateCol}</th>
                   <th className="p-3.5">{tx.projMin}</th>
-                  <th className="p-3.5 text-[#241909] font-black">{tx.projModal}</th>
+                  <th className="p-3.5 text-[#241909] font-bold">{tx.projModal}</th>
                   <th className="p-3.5">{tx.projMax}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E8C99A] bg-[#FEFADC]">
                 {prediction.forecast_timeline.map((row: any, idx: number) => (
                   <tr key={idx} className="hover:bg-[#F6D4BA]/60 transition-colors">
-                    <td className="p-3.5 font-extrabold text-[#241909]">{row.day}</td>
+                    <td className="p-3.5 font-semibold text-[#241909]">{row.day}</td>
                     <td className="p-3.5 font-bold text-[#5C4A30]">{row.date}</td>
                     <td className="p-3.5 font-mono font-bold text-[#5C4A30]">₹{row.projected_min}</td>
-                    <td className="p-3.5 font-mono font-black text-[#1E472D] text-base sm:text-lg">
+                    <td className="p-3.5 font-mono font-bold text-[#1E472D] text-base sm:text-lg">
                       ₹{row.projected_modal}
                     </td>
                     <td className="p-3.5 font-mono font-bold text-[#5C4A30]">₹{row.projected_max}</td>
