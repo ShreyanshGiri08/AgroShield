@@ -25,3 +25,5 @@
 | **Phase 8** | Counterfactual Scenario Simulation ("What-If") | High-Priority | [x] Completed (Rain/Temp sliders + baseline comparison) |
 | **Phase 9** | End-to-End Testing & Graceful Failure Validation | Essential | [x] Completed |
 | **Phase 10** | Demo Script & Deployment Setup | Essential | [x] Completed |
+| **Phase 11** | Production Deployment (Vercel Frontend & Render Backend) | Essential | [x] Completed (Live at agro-shield-rho.vercel.app) |
+| **Phase 12** | Demo Video Walkthrough & Official Pitch Deck | Essential | [x] Completed (YouTube walkthrough & Google Slides linked) |
