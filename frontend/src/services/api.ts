@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 const isBrowser = typeof window !== 'undefined';
-const API_BASE = isBrowser && window.location.port === '5173'
+const API_BASE = (import.meta.env.VITE_API_BASE_URL as string) || (isBrowser && window.location.port === '5173'
   ? '' // Reverse-proxied via Vite server to http://127.0.0.1:8000 (prevents IPv6 ::1 ERR_CONNECTION_REFUSED)
-  : 'http://127.0.0.1:8000';
+  : 'http://127.0.0.1:8000');
 
 export const apiClient = axios.create({
   baseURL: API_BASE,
