@@ -234,6 +234,10 @@ const AppInner: React.FC = () => {
         onQuickDemoLogin={handleQuickDemoLogin}
         isLoggedIn={false}
         onOpenDashboard={() => setActiveTab('dashboard')}
+        onOpenMandi={() => {
+          handleQuickDemoLogin();
+          setActiveTab('mandi');
+        }}
       />
     );
   }
@@ -341,6 +345,7 @@ const AppInner: React.FC = () => {
           onQuickDemoLogin={() => setActiveTab('dashboard')}
           isLoggedIn={true}
           onOpenDashboard={() => setActiveTab('dashboard')}
+          onOpenMandi={() => setActiveTab('mandi')}
         />
       ) : (
         <main className="flex-1 max-w-[1400px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">

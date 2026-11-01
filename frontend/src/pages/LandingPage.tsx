@@ -12,7 +12,6 @@ import {
   ShieldCheck,
   Cpu,
 } from 'lucide-react';
-import { MandiRadar } from '../components/MandiRadar';
 
 interface LandingPageProps {
   language: string;
@@ -21,6 +20,7 @@ interface LandingPageProps {
   onQuickDemoLogin: () => void;
   isLoggedIn: boolean;
   onOpenDashboard: () => void;
+  onOpenMandi?: () => void;
 }
 
 const t = {
@@ -159,6 +159,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   onQuickDemoLogin,
   isLoggedIn,
   onOpenDashboard,
+  onOpenMandi,
 }) => {
   const isHi = language === 'hi';
   const tx = isHi ? t.hi : t.en;
@@ -338,19 +339,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <a href="#capabilities" className="px-3.5 py-1.5 rounded-xl hover:bg-[#F6D4BA] hover:text-[#241909] transition-all">
               {tx.capabilities}
             </a>
-            <a
-              href="#mandi"
-              onClick={(e) => {
-                const el = document.getElementById('mandi');
-                if (el) {
-                  e.preventDefault();
-                  el.scrollIntoView({ behavior: 'smooth' });
-                }
-              }}
-              className="px-3.5 py-1.5 rounded-xl hover:bg-[#F6D4BA] hover:text-[#241909] transition-all"
+            <button
+              onClick={onOpenMandi || onOpenDashboard || onOpenLogin}
+              className="px-3.5 py-1.5 rounded-xl hover:bg-[#F6D4BA] hover:text-[#241909] transition-all text-sm font-bold text-[#5C4A30]"
             >
               {tx.mandiRadar}
-            </a>
+            </button>
             <a href="#integrity" className="px-3.5 py-1.5 rounded-xl hover:bg-[#F6D4BA] hover:text-[#241909] transition-all">
               {tx.icarKnowledge}
             </a>
@@ -460,20 +454,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 </>
               )}
 
-              <a
-                href="#mandi"
-                onClick={(e) => {
-                  const el = document.getElementById('mandi');
-                  if (el) {
-                    e.preventDefault();
-                    el.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }}
+              <button
+                onClick={onOpenMandi || onOpenDashboard || onOpenLogin}
                 className="px-6 py-3.5 rounded-xl bg-[#FFFDF5] hover:bg-[#F6D4BA] text-[#241909] text-base font-semibold border border-[#E8C99A] transition-colors flex items-center gap-2"
               >
                 <Scale className="w-5 h-5 text-[#E07B39]" />
                 <span>{tx.ctaExplore}</span>
-              </a>
+              </button>
             </div>
 
             {/* 4 Stats Badges Bar */}
@@ -729,12 +716,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </div>
       </section>
 
-      {/* ─── LIVE AGMARKNET MANDI RADAR ─── */}
-      <section id="mandi" className="py-20 bg-[#FFFDF5] border-t-2 border-[#E8C99A]">
-        <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <MandiRadar language={language} defaultState="Maharashtra" defaultDistrict="Akola" defaultCommodity="Cotton" />
-        </div>
-      </section>
+      
 
       {/* ─── DATA INTEGRITY & AUDIT PROVENANCE ─── */}
       <section id="integrity" className="py-16 bg-[#F6D4BA] border-t-2 border-[#E8C99A]">
