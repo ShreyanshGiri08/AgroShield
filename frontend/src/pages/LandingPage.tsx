@@ -10,9 +10,9 @@ import {
   SunMedium,
   TrendingUp,
   ShieldCheck,
-  Activity,
   Cpu,
 } from 'lucide-react';
+import { MandiRadar } from '../components/MandiRadar';
 
 interface LandingPageProps {
   language: string;
@@ -48,7 +48,7 @@ const t = {
       { label: 'Multi-Crop Coverage', val: '10+ Crops', sub: 'Cotton, Wheat, Soybean & more' },
     ],
     bentoTitle: 'Engineered for India’s 140 Million Farmers',
-    bentoSub: 'A production-grade, multimodal intelligence stack built for precision agricultural resilience.',
+    bentoSub: 'Live weather, market prices, AI advisories, and crop disease detection — built for India.',
     pillars: [
       {
         icon: CloudRain,
@@ -76,7 +76,6 @@ const t = {
       },
     ],
     transparencyTitle: 'Strict Data Integrity — No Hallucinations, No Dummy Data',
-    transparencyDesc: 'Built strictly under hackathon guidelines: verified APIs, active databases, and verifiable research documents only.',
     howItWorks: 'How AgroShield Works in 3 Simple Steps',
     step1: '1. Register Farm Location & Crops',
     step1Desc: 'Enter village coordinates, acreage, soil type, and multiple cultivated crops.',
@@ -140,7 +139,6 @@ const t = {
       },
     ],
     transparencyTitle: 'पूर्णतः प्रामाणिक डेटा — शून्य बनावटी जानकारी',
-    transparencyDesc: 'हैकथॉन के कड़े नियमों के अनुसार: केवल सजीव APIs, सक्रिय डेटाबेस और सरकारी अनुसंधान बुलेटिन का उपयोग।',
     howItWorks: 'एग्रोशील्ड कैसे काम करता है (3 सरल चरण)',
     step1: '1. खेत का स्थान और फसलें चुनें',
     step1Desc: 'गाँव, जिला, खेत का क्षेत्रफल और बोई गई फसलें दर्ज करें।',
@@ -316,11 +314,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
           {/* Logo */}
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <div className="w-11 h-11 rounded-2xl bg-[#241909] text-[#FEFADC] flex items-center justify-center font-black text-xl shadow-md border border-[#E07B39]/40">
+            <div className="w-10 h-10 rounded-xl bg-[#241909] flex items-center justify-center border border-[#E07B39]/30">
               <Leaf className="w-6 h-6 text-[#F3B391]" />
             </div>
             <div>
-              <div className="text-xl font-black text-[#241909] tracking-tight flex items-center gap-1.5">
+              <div className="text-lg font-semibold text-[#241909] tracking-tight flex items-center gap-1.5">
                 <span>AgroShield</span>
                 <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-[#F3B391] text-[#241909] border border-[#E07B39]">
                   AI
@@ -333,14 +331,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </div>
 
           {/* Center Navigation Pills */}
-          <nav className="hidden lg:flex items-center bg-[#FFFDF5] px-2 py-1.5 rounded-2xl border border-[#E8C99A] shadow-sm text-sm font-bold text-[#5C4A30]">
+          <nav className="hidden lg:flex items-center bg-[#FFFDF5] px-2 py-1.5 rounded-2xl border border-[#E8C99A] shadow-sm text-sm text-[#5C4A30]">
             <a href="#overview" className="px-3.5 py-1.5 rounded-xl hover:bg-[#F6D4BA] hover:text-[#241909] transition-all">
               {tx.overview}
             </a>
             <a href="#capabilities" className="px-3.5 py-1.5 rounded-xl hover:bg-[#F6D4BA] hover:text-[#241909] transition-all">
               {tx.capabilities}
             </a>
-            <a href="#mandi" className="px-3.5 py-1.5 rounded-xl hover:bg-[#F6D4BA] hover:text-[#241909] transition-all">
+            <a
+              href="#mandi"
+              onClick={(e) => {
+                const el = document.getElementById('mandi');
+                if (el) {
+                  e.preventDefault();
+                  el.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className="px-3.5 py-1.5 rounded-xl hover:bg-[#F6D4BA] hover:text-[#241909] transition-all"
+            >
               {tx.mandiRadar}
             </a>
             <a href="#integrity" className="px-3.5 py-1.5 rounded-xl hover:bg-[#F6D4BA] hover:text-[#241909] transition-all">
@@ -406,13 +414,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             {/* High-Impact Announcement Pill */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FFFDF5] border border-[#E8C99A] shadow-sm">
               <span className="w-2.5 h-2.5 rounded-full bg-[#3A7D44] animate-pulse" />
-              <span className="text-xs sm:text-sm font-black text-[#241909] tracking-wide">
+              <span className="text-xs sm:text-sm font-semibold text-[#241909] tracking-wide">
                 {tx.badge}
               </span>
             </div>
 
             {/* Primary Headline */}
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-[#241909] tracking-tight leading-[1.08]">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#241909] tracking-tight leading-[1.1]">
               <span className="block text-[#E07B39]">{tx.heroTitle1}</span>
               <span className="block">{tx.heroTitle2}</span>
             </h1>
@@ -427,7 +435,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               {isLoggedIn ? (
                 <button
                   onClick={onOpenDashboard}
-                  className="btn-primary py-4 px-8 text-base sm:text-lg font-black flex items-center gap-2 shadow-lg hover:scale-[1.02] transition-all"
+                  className="btn-primary py-3.5 px-7 text-base font-bold flex items-center gap-2"
                 >
                   <Sparkles className="w-5 h-5 text-[#241909]" />
                   <span>{tx.openDashboard}</span>
@@ -436,7 +444,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <>
                   <button
                     onClick={onOpenLogin}
-                    className="btn-primary py-4 px-8 text-base sm:text-lg font-black flex items-center gap-2 shadow-lg hover:scale-[1.02] transition-all"
+                    className="btn-primary py-3.5 px-7 text-base font-bold flex items-center gap-2"
                   >
                     <span>{tx.ctaPrimary}</span>
                     <ArrowRight className="w-5 h-5" />
@@ -444,7 +452,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
                   <button
                     onClick={onQuickDemoLogin}
-                    className="px-6 py-4 rounded-xl bg-[#241909] hover:bg-[#3D2C15] text-[#FEFADC] text-base sm:text-lg font-black border border-[#241909] flex items-center gap-2 shadow-lg transition-all"
+                    className="px-6 py-3.5 rounded-xl bg-[#241909] hover:bg-[#3D2C15] text-[#FEFADC] text-base font-bold border border-[#241909] flex items-center gap-2 transition-colors"
                   >
                     <Sparkles className="w-5 h-5 text-[#F3B391]" />
                     <span>{tx.ctaDemo}</span>
@@ -454,30 +462,31 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
               <a
                 href="#mandi"
-                className="px-6 py-4 rounded-xl bg-[#FFFDF5] hover:bg-[#F6D4BA] text-[#241909] text-base sm:text-lg font-black border border-[#E8C99A] shadow-md transition-all flex items-center gap-2"
+                onClick={(e) => {
+                  const el = document.getElementById('mandi');
+                  if (el) {
+                    e.preventDefault();
+                    el.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+                className="px-6 py-3.5 rounded-xl bg-[#FFFDF5] hover:bg-[#F6D4BA] text-[#241909] text-base font-semibold border border-[#E8C99A] transition-colors flex items-center gap-2"
               >
                 <Scale className="w-5 h-5 text-[#E07B39]" />
                 <span>{tx.ctaExplore}</span>
               </a>
             </div>
 
-            {/* Physics Interaction Hint Pill */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F6D4BA]/60 border border-[#E8C99A] text-[11px] font-bold text-[#5C4A30] mt-3">
-              <Activity className="w-3.5 h-3.5 text-[#E07B39] animate-spin" style={{ animationDuration: '6s' }} />
-              <span>{tx.physicsHint}</span>
-            </div>
-
             {/* 4 Stats Badges Bar */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 text-left">
               {tx.stats.map((st, idx) => (
-                <div key={idx} className="bg-[#FFFDF5] border-2 border-[#E8C99A] rounded-2xl p-5 shadow-sm">
-                  <span className="text-xs font-black text-[#5C4A30] uppercase tracking-wider block mb-1">
+                <div key={idx} className="bg-[#FFFDF5] border border-[#E8C99A] rounded-xl p-4">
+                  <span className="text-xs font-medium text-[#5C4A30] uppercase tracking-wide block mb-1">
                     {st.label}
                   </span>
-                  <span className="text-2xl sm:text-3xl font-black text-[#241909] font-mono block">
+                  <span className="text-2xl font-bold text-[#241909] font-mono block">
                     {st.val}
                   </span>
-                  <span className="text-xs font-bold text-[#3A7D44] block mt-1">
+                  <span className="text-xs font-medium text-[#3A7D44] block mt-1">
                     {st.sub}
                   </span>
                 </div>
@@ -646,7 +655,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       <section id="capabilities" className="py-20 bg-[#FFFDF5] border-t-2 border-b-2 border-[#E8C99A]">
         <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="text-center max-w-3xl mx-auto space-y-3">
-            <h2 className="text-3xl sm:text-5xl font-black text-[#241909] tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#241909] tracking-tight">
               {tx.bentoTitle}
             </h2>
             <p className="text-base sm:text-lg font-medium text-[#5C4A30]">
@@ -660,7 +669,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               return (
                 <div
                   key={idx}
-                  className="bg-[#FEFADC] border-2 border-[#E8C99A] rounded-3xl p-7 sm:p-8 space-y-4 hover:shadow-xl transition-all"
+                  className="bg-[#FEFADC] border border-[#E8C99A] rounded-2xl p-6 sm:p-7 space-y-4 hover:border-[#D4A870] transition-colors"
                 >
                   <div className="flex items-center justify-between">
                     <div className="w-12 h-12 rounded-2xl bg-[#241909] text-[#FEFADC] flex items-center justify-center">
@@ -670,10 +679,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       {pil.tag}
                     </span>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-black text-[#241909]">
+                  <h3 className="text-xl font-bold text-[#241909]">
                     {pil.title}
                   </h3>
-                  <p className="text-sm sm:text-base font-medium text-[#5C4A30] leading-relaxed">
+                  <p className="text-sm text-[#5C4A30] leading-relaxed">
                     {pil.desc}
                   </p>
                 </div>
@@ -687,36 +696,43 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       <section className="py-20 bg-[#FEFADC]">
         <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="text-center max-w-2xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl font-black text-[#241909]">
+            <h2 className="text-3xl font-bold text-[#241909]">
               {tx.howItWorks}
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-[#FFFDF5] border-2 border-[#E8C99A] rounded-3xl p-6 sm:p-8 space-y-3">
+            <div className="bg-[#FFFDF5] border border-[#E8C99A] rounded-xl p-5 space-y-3">
               <span className="w-10 h-10 rounded-xl bg-[#F3B391] text-[#241909] font-black text-lg flex items-center justify-center border border-[#E07B39]">
                 1
               </span>
-              <h3 className="text-xl font-black text-[#241909]">{tx.step1}</h3>
-              <p className="text-sm font-semibold text-[#5C4A30] leading-relaxed">{tx.step1Desc}</p>
+              <h3 className="text-lg font-semibold text-[#241909]">{tx.step1}</h3>
+              <p className="text-sm text-[#5C4A30] leading-relaxed">{tx.step1Desc}</p>
             </div>
 
-            <div className="bg-[#FFFDF5] border-2 border-[#E8C99A] rounded-3xl p-6 sm:p-8 space-y-3">
+            <div className="bg-[#FFFDF5] border border-[#E8C99A] rounded-xl p-5 space-y-3">
               <span className="w-10 h-10 rounded-xl bg-[#F3B391] text-[#241909] font-black text-lg flex items-center justify-center border border-[#E07B39]">
                 2
               </span>
-              <h3 className="text-xl font-black text-[#241909]">{tx.step2}</h3>
-              <p className="text-sm font-semibold text-[#5C4A30] leading-relaxed">{tx.step2Desc}</p>
+              <h3 className="text-lg font-semibold text-[#241909]">{tx.step2}</h3>
+              <p className="text-sm text-[#5C4A30] leading-relaxed">{tx.step2Desc}</p>
             </div>
 
-            <div className="bg-[#FFFDF5] border-2 border-[#E8C99A] rounded-3xl p-6 sm:p-8 space-y-3">
+            <div className="bg-[#FFFDF5] border border-[#E8C99A] rounded-xl p-5 space-y-3">
               <span className="w-10 h-10 rounded-xl bg-[#F3B391] text-[#241909] font-black text-lg flex items-center justify-center border border-[#E07B39]">
                 3
               </span>
-              <h3 className="text-xl font-black text-[#241909]">{tx.step3}</h3>
-              <p className="text-sm font-semibold text-[#5C4A30] leading-relaxed">{tx.step3Desc}</p>
+              <h3 className="text-lg font-semibold text-[#241909]">{tx.step3}</h3>
+              <p className="text-sm text-[#5C4A30] leading-relaxed">{tx.step3Desc}</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ─── LIVE AGMARKNET MANDI RADAR ─── */}
+      <section id="mandi" className="py-20 bg-[#FFFDF5] border-t-2 border-[#E8C99A]">
+        <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          <MandiRadar language={language} defaultState="Maharashtra" defaultDistrict="Akola" defaultCommodity="Cotton" />
         </div>
       </section>
 
@@ -727,20 +743,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <CheckCircle2 className="w-4 h-4 text-[#3A7D44]" />
             <span>{tx.transparencyTitle}</span>
           </div>
-          <p className="text-sm sm:text-base font-semibold text-[#5C4A30] max-w-2xl mx-auto">
-            {tx.transparencyDesc}
-          </p>
           <div className="flex flex-wrap items-center justify-center gap-6 pt-2 text-xs sm:text-sm font-extrabold text-[#241909]">
-            <span className="flex items-center gap-1.5 bg-[#FEFADC] px-4 py-2 rounded-xl border border-[#E8C99A]">
+            <span className="flex items-center gap-1.5 bg-[#FEFADC] px-3.5 py-1.5 rounded-lg border border-[#E8C99A]">
               Open-Meteo CC BY 4.0
             </span>
-            <span className="flex items-center gap-1.5 bg-[#FEFADC] px-4 py-2 rounded-xl border border-[#E8C99A]">
+            <span className="flex items-center gap-1.5 bg-[#FEFADC] px-3.5 py-1.5 rounded-lg border border-[#E8C99A]">
               data.gov.in AGMARKNET
             </span>
-            <span className="flex items-center gap-1.5 bg-[#FEFADC] px-4 py-2 rounded-xl border border-[#E8C99A]">
+            <span className="flex items-center gap-1.5 bg-[#FEFADC] px-3.5 py-1.5 rounded-lg border border-[#E8C99A]">
               ICAR Package of Practices
             </span>
-            <span className="flex items-center gap-1.5 bg-[#FEFADC] px-4 py-2 rounded-xl border border-[#E8C99A]">
+            <span className="flex items-center gap-1.5 bg-[#FEFADC] px-3.5 py-1.5 rounded-lg border border-[#E8C99A]">
               Neon PostgreSQL pgvector
             </span>
           </div>

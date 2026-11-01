@@ -323,7 +323,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
             🌾
           </div>
           <div>
-            <h1 className="font-extrabold text-xl tracking-tight text-[#241909]">AgroShield</h1>
+            <h1 className="font-semibold text-xl tracking-tight text-[#241909]">AgroShield</h1>
             <p className="text-[11px] text-[#5C4A30] font-medium hidden sm:block">{T_('tagline')}</p>
           </div>
         </div>
@@ -351,7 +351,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
       {/* Main Container */}
       <main className="max-w-xl w-full mx-auto my-6">
-        <div className="bg-[#F6D4BA] border-2 border-[#E8C99A] rounded-2xl shadow-xl overflow-hidden p-6 sm:p-8">
+        <div className="bg-[#F6D4BA] border border-[#E8C99A] rounded-2xl shadow-lg overflow-hidden p-6 sm:p-8">
           {/* Tabs: Login / Register */}
           <div className="flex bg-[#FEFADC] p-1.5 rounded-xl border border-[#E8C99A] mb-6">
             <button
@@ -425,7 +425,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
               <button
                 type="submit"
                 disabled={loginLoading}
-                className="w-full py-3 rounded-xl bg-[#F3B391] hover:bg-[#E8A070] text-[#241909] font-extrabold text-sm border-2 border-[#E07B39] shadow transition-all active:scale-[0.98] disabled:opacity-50 mt-2"
+                className="w-full py-3 rounded-xl bg-[#F3B391] hover:bg-[#E8A070] text-[#241909] font-semibold text-sm border-2 border-[#E07B39] shadow transition-all active:scale-[0.98] disabled:opacity-50 mt-2"
               >
                 {loginLoading ? T_('loading') : T_('loginBtn')}
               </button>
@@ -605,7 +605,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                     <button
                       type="button"
                       onClick={goBack}
-                      className="flex-1 py-2.5 rounded-xl border-2 border-[#E8C99A] bg-[#FEFADC] text-[#5C4A30] font-bold text-sm"
+                      className="flex-1 py-2.5 rounded-xl border border-[#E8C99A] bg-[#FEFADC] text-[#5C4A30] font-bold text-sm"
                     >
                       {T_('back')}
                     </button>
@@ -710,7 +710,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                           <span className="w-6 h-6 rounded-full bg-[#F3B391] text-[#241909] font-bold flex items-center justify-center text-[10px]">
                             {idx + 1}
                           </span>
-                          <span className="font-extrabold text-[#241909] text-sm">
+                          <span className="font-semibold text-[#241909] text-sm">
                             {lang === 'hi' ? c.hindiName : c.cropName}
                           </span>
                         </div>
@@ -753,7 +753,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                     <button
                       type="button"
                       onClick={goBack}
-                      className="flex-1 py-2.5 rounded-xl border-2 border-[#E8C99A] bg-[#FEFADC] text-[#5C4A30] font-bold text-sm"
+                      className="flex-1 py-2.5 rounded-xl border border-[#E8C99A] bg-[#FEFADC] text-[#5C4A30] font-bold text-sm"
                     >
                       {T_('back')}
                     </button>
@@ -761,7 +761,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                       type="button"
                       onClick={handleRegister}
                       disabled={regLoading}
-                      className="flex-1 py-2.5 rounded-xl bg-[#F3B391] hover:bg-[#E8A070] text-[#241909] font-extrabold text-sm border-2 border-[#E07B39] shadow disabled:opacity-50"
+                      className="flex-1 py-2.5 rounded-xl bg-[#F3B391] hover:bg-[#E8A070] text-[#241909] font-semibold text-sm border-2 border-[#E07B39] shadow disabled:opacity-50"
                     >
                       {regLoading ? T_('submitting') : T_('submit')}
                     </button>

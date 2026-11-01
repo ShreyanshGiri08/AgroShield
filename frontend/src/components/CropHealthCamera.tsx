@@ -116,7 +116,7 @@ export const CropHealthCamera: React.FC<CropHealthCameraProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E8C99A] pb-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-[#241909] flex items-center gap-2.5">
+          <h2 className="text-xl sm:text-2xl font-semibold text-[#241909] flex items-center gap-2.5">
             <Camera className="w-6 h-6 text-[#E07B39]" />
             <span>{tx.title}</span>
           </h2>
@@ -130,7 +130,7 @@ export const CropHealthCamera: React.FC<CropHealthCameraProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
         {/* Specimen Upload Dropzone */}
         <div className="space-y-4">
-          <div className="border-2 border-dashed border-[#E8C99A] hover:border-[#241909] rounded-2xl p-6 text-center bg-[#FEFADC] transition cursor-pointer relative flex flex-col items-center justify-center min-h-[240px] shadow-inner">
+          <div className="border-2 border-dashed border-[#E8C99A] hover:border-[#241909] rounded-xl p-6 text-center bg-[#FEFADC] transition cursor-pointer relative flex flex-col items-center justify-center min-h-[240px] shadow-inner">
             {previewUrl ? (
               <div className="w-full h-56 rounded-xl overflow-hidden relative">
                 <img src={previewUrl} alt="Plant specimen" className="w-full h-full object-cover" />
@@ -140,10 +140,10 @@ export const CropHealthCamera: React.FC<CropHealthCameraProps> = ({
               </div>
             ) : (
               <div className="space-y-2.5 py-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#F6D4BA] text-[#241909] flex items-center justify-center mx-auto border border-[#E8C99A]">
+                <div className="w-12 h-12 rounded-xl bg-[#F6D4BA] text-[#241909] flex items-center justify-center mx-auto border border-[#E8C99A]">
                   <Upload className="w-6 h-6 text-[#E07B39]" />
                 </div>
-                <span className="text-base font-extrabold text-[#241909] block">
+                <span className="text-base font-semibold text-[#241909] block">
                   {tx.dropzoneTitle}
                 </span>
                 <span className="text-xs font-semibold text-[#5C4A30] block">
@@ -161,7 +161,7 @@ export const CropHealthCamera: React.FC<CropHealthCameraProps> = ({
 
           {/* Quick Test Samples */}
           <div className="flex flex-wrap items-center justify-between text-xs gap-2">
-            <span className="font-extrabold text-[#5C4A30]">{tx.presets}</span>
+            <span className="font-semibold text-[#5C4A30]">{tx.presets}</span>
             <div className="flex gap-2">
               <button
                 type="button"
@@ -183,7 +183,7 @@ export const CropHealthCamera: React.FC<CropHealthCameraProps> = ({
           <button
             onClick={handleUploadAndAnalyze}
             disabled={!selectedFile || isAnalyzing}
-            className="w-full btn-primary disabled:opacity-40 py-3.5 text-base font-extrabold flex items-center justify-center gap-2 shadow-md"
+            className="w-full btn-primary disabled:opacity-40 py-3.5 text-base font-semibold flex items-center justify-center gap-2 shadow-md"
           >
             {isAnalyzing ? (
               <>
@@ -202,23 +202,23 @@ export const CropHealthCamera: React.FC<CropHealthCameraProps> = ({
         {/* Diagnosis Results Card */}
         <div>
           {analysisResult ? (
-            <div className="border-2 border-[#E8C99A] rounded-2xl p-6 bg-[#FEFADC] space-y-4 shadow-sm">
+            <div className="border border-[#E8C99A] rounded-xl p-6 bg-[#FEFADC] space-y-4 shadow-sm">
               <div className="flex justify-between items-start border-b border-[#E8C99A] pb-3 gap-2">
                 <div>
                   <span className="text-xs font-bold text-[#5C4A30] uppercase tracking-wide block">
                     {isHi ? 'पहचाना गया रोग / कीट:' : 'Identified Pathology:'}
                   </span>
-                  <h3 className="font-extrabold text-xl text-[#241909] mt-0.5">
+                  <h3 className="font-semibold text-xl text-[#241909] mt-0.5">
                     {analysisResult.diagnosis || 'Pink Bollworm Infestation'}
                   </h3>
                 </div>
-                <span className="text-xs font-extrabold px-3 py-1.5 rounded-full bg-green-100 text-green-800 border border-green-300 flex-shrink-0">
+                <span className="text-xs font-semibold px-3 py-1.5 rounded-full bg-green-100 text-green-800 border border-green-300 flex-shrink-0">
                   {Math.round((analysisResult.confidence_score || 0.88) * 100)}% {tx.match}
                 </span>
               </div>
 
               <div>
-                <span className="text-xs font-extrabold text-[#5C4A30] uppercase tracking-wide block mb-1">
+                <span className="text-xs font-semibold text-[#5C4A30] uppercase tracking-wide block mb-1">
                   {tx.observedTitle}
                 </span>
                 <p className="text-sm font-semibold text-[#241909] leading-relaxed bg-[#FFFDF5] p-3.5 rounded-xl border border-[#E8C99A]">
@@ -227,7 +227,7 @@ export const CropHealthCamera: React.FC<CropHealthCameraProps> = ({
               </div>
 
               <div>
-                <span className="text-xs font-extrabold text-[#5C4A30] uppercase tracking-wide block mb-1">
+                <span className="text-xs font-semibold text-[#5C4A30] uppercase tracking-wide block mb-1">
                   {tx.protocolTitle}
                 </span>
                 <p className="text-sm font-bold text-[#1E472D] leading-relaxed bg-[#EDF6EF] p-3.5 rounded-xl border border-[#276738]/30">
@@ -241,8 +241,8 @@ export const CropHealthCamera: React.FC<CropHealthCameraProps> = ({
               </div>
             </div>
           ) : (
-            <div className="border-2 border-dashed border-[#E8C99A] rounded-2xl p-8 text-center bg-[#FEFADC] min-h-[240px] flex flex-col items-center justify-center space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-[#F6D4BA] text-[#241909] flex items-center justify-center border border-[#E8C99A]">
+            <div className="border-2 border-dashed border-[#E8C99A] rounded-xl p-8 text-center bg-[#FEFADC] min-h-[240px] flex flex-col items-center justify-center space-y-3">
+              <div className="w-12 h-12 rounded-xl bg-[#F6D4BA] text-[#241909] flex items-center justify-center border border-[#E8C99A]">
                 <Camera className="w-6 h-6 text-[#E07B39]" />
               </div>
               <p className="text-sm font-bold text-[#5C4A30] max-w-xs">{tx.placeholderPrompt}</p>

@@ -16,33 +16,33 @@ const allStages: Record<string, Array<{
   default: [
     {
       name: 'उगना / अंकुरण', en: 'Seedling', range: '0–25 DAS',
-      min: 0, max: 25, sens: 'Moderate', sensHi: 'मध्यम संवेदनशीलता',
+      min: 0, max: 25, sens: 'Moderate', sensHi: 'मध्यम',
       guidance: 'Light watering. Watch for early pests.',
-      guidanceHi: 'हल्की सिंचाई रखें। शुरुआती रस चूसने वाले कीड़ों पर नज़र रखें।',
+      guidanceHi: 'हल्की सिंचाई रखें। शुरुआती कीड़ों पर नज़र रखें।',
     },
     {
       name: 'वानस्पतिक बढ़वार', en: 'Vegetative', range: '26–50 DAS',
-      min: 26, max: 50, sens: 'Moderate', sensHi: 'मध्यम संवेदनशीलता',
+      min: 26, max: 50, sens: 'Moderate', sensHi: 'मध्यम',
       guidance: 'Weed and apply nitrogen as recommended.',
-      guidanceHi: 'समय पर खरपतवार निकालें और अनुशंसित मात्रा में यूरिया/खाद दें।',
+      guidanceHi: 'समय पर खरपतवार निकालें और अनुशंसित मात्रा में यूरिया दें।',
     },
     {
-      name: 'फूल व कलियां आना', en: 'Flowering & Square', range: '51–100 DAS',
-      min: 51, max: 100, sens: 'Critical', sensHi: 'अति-संवेदनशील अवस्था',
+      name: 'फूल व कलियां आना', en: 'Flowering', range: '51–100 DAS',
+      min: 51, max: 100, sens: 'Critical', sensHi: 'अति-संवेदनशील',
       guidance: 'Keep moisture steady. Waterlogging causes flower shedding.',
-      guidanceHi: 'नमी समान रखें। खेत में पानी न भरने दें वरना फूल और कलियां झड़ने लगेंगी।',
+      guidanceHi: 'नमी समान रखें। खेत में पानी न भरने दें।',
     },
     {
-      name: 'फल / दाना भराव', en: 'Boll/Grain Filling', range: '101–140 DAS',
-      min: 101, max: 140, sens: 'High', sensHi: 'उच्च संवेदनशीलता',
+      name: 'फल / दाना भराव', en: 'Grain Filling', range: '101–140 DAS',
+      min: 101, max: 140, sens: 'High', sensHi: 'उच्च',
       guidance: 'Stop irrigation near harvest. Protect from rain.',
-      guidanceHi: 'कटाई से 15 दिन पूर्व सिंचाई बंद करें। अत्यधिक नमी से फसल को बचाएं।',
+      guidanceHi: 'कटाई से 15 दिन पूर्व सिंचाई बंद करें।',
     },
     {
-      name: 'परिपक्वता व कटाई', en: 'Harvest Maturity', range: '141–175 DAS',
-      min: 141, max: 175, sens: 'Low', sensHi: 'कम संवेदनशीलता',
+      name: 'परिपक्वता व कटाई', en: 'Harvest', range: '141–175 DAS',
+      min: 141, max: 175, sens: 'Low', sensHi: 'कम',
       guidance: 'Harvest on dry sunny days after morning dew dries.',
-      guidanceHi: 'साफ धूप वाले दिन, सुबह की ओस सूखने के पश्चात ही कटाई व चुगाई करें।',
+      guidanceHi: 'साफ धूप वाले दिन सुबह की ओस सूखने पर कटाई करें।',
     },
   ],
 };
@@ -64,32 +64,31 @@ export const CropStageStepper: React.FC<CropStageStepperProps> = ({
   const activeStage = stages[activeIdx];
 
   const title = isHi
-    ? `${hindiName} की अवस्था (${diffDays} दिन पूर्ण)`
-    : `${cropName} Phenological Growth Stage (${diffDays} DAS)`;
+    ? `${hindiName} · ${diffDays} दिन`
+    : `${cropName} · ${diffDays} DAS`;
 
   return (
-    <div className="agro-card p-6 sm:p-8 space-y-6">
+    <div className="agro-card p-6 sm:p-7 space-y-5">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E8C99A] pb-4">
         <div>
-          <h3 className="text-xl sm:text-2xl font-black text-[#241909] flex items-center gap-2">
-            <Clock className="w-5 h-5 text-[#E07B39]" />
+          <h3 className="text-lg font-bold text-[#241909] flex items-center gap-2">
+            <Clock className="w-5 h-5 text-[#E07B39] flex-shrink-0" />
             <span>{title}</span>
           </h3>
-          <p className="text-xs sm:text-sm font-semibold text-[#5C4A30] mt-1">
+          <p className="text-xs text-[#5C4A30] mt-0.5">
             {isHi
-              ? `बुवाई तिथि: ${sowingDate} • ICAR प्रमाणित फसल विकास कैलेंडर`
-              : `Sowing Date: ${sowingDate} • ICAR Phenological Growth Calendar`}
+              ? `बुवाई: ${sowingDate} · ICAR फसल विकास कैलेंडर`
+              : `Sown: ${sowingDate} · ICAR Phenological Calendar`}
           </p>
         </div>
-        <span className="text-xs sm:text-sm font-black px-4 py-2 rounded-xl bg-[#F3B391] text-[#241909] border border-[#E07B39] shadow-sm self-start sm:self-auto">
-          {isHi ? activeStage.name : activeStage.en}
-          {' '}• {isHi ? activeStage.sensHi : activeStage.sens}
+        <span className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#F3B391] text-[#241909] border border-[#E07B39] self-start sm:self-auto">
+          {isHi ? activeStage.name : activeStage.en} · {isHi ? activeStage.sensHi : activeStage.sens}
         </span>
       </div>
 
-      {/* Stage Stepper Horizontal Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+      {/* Stage Stepper */}
+      <div className="grid grid-cols-1 sm:grid-cols-5 gap-2.5">
         {stages.map((stg, i) => {
           const isPassed = i < activeIdx;
           const isCurrent = i === activeIdx;
@@ -97,34 +96,34 @@ export const CropStageStepper: React.FC<CropStageStepperProps> = ({
           return (
             <div
               key={stg.en}
-              className={`p-4 rounded-2xl border-2 transition-all ${
+              className={`p-3.5 rounded-xl border-2 transition-colors ${
                 isCurrent
-                  ? 'bg-[#F3B391] border-[#E07B39] shadow-md scale-[1.02]'
+                  ? 'bg-[#F3B391] border-[#E07B39]'
                   : isPassed
                   ? 'bg-[#F6D4BA] border-[#E8C99A]'
-                  : 'bg-[#FEFADC] border-[#E8C99A] opacity-75'
+                  : 'bg-[#FEFADC] border-[#E8C99A] opacity-70'
               }`}
             >
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-1.5">
                 {isPassed ? (
                   <CheckCircle className="w-4 h-4 text-[#3A7D44] flex-shrink-0" />
                 ) : isCurrent ? (
-                  <div className="w-3.5 h-3.5 rounded-full bg-[#241909] flex-shrink-0 animate-pulse" />
+                  <div className="w-3 h-3 rounded-full bg-[#241909] flex-shrink-0 animate-pulse" />
                 ) : (
                   <Circle className="w-4 h-4 text-[#B8A080] flex-shrink-0" />
                 )}
-                <span className={`font-black text-sm sm:text-base leading-tight ${
-                  isCurrent ? 'text-[#241909]' : isPassed ? 'text-[#241909]' : 'text-[#5C4A30]'
+                <span className={`font-semibold text-sm leading-tight ${
+                  isCurrent ? 'text-[#241909]' : isPassed ? 'text-[#3A2A18]' : 'text-[#7A6A50]'
                 }`}>
                   {isHi ? stg.name : stg.en}
                 </span>
               </div>
-              <span className={`text-xs font-mono font-bold block ${isCurrent ? 'text-[#241909]' : 'text-[#5C4A30]'}`}>
+              <span className={`text-xs font-mono block ${isCurrent ? 'text-[#3A2A18]' : 'text-[#8A7A60]'}`}>
                 {stg.range}
               </span>
               {isCurrent && (
-                <span className="inline-block text-xs font-black text-[#241909] bg-[#FEFADC] px-2.5 py-1 rounded-md mt-2 border border-[#E07B39]">
-                  {isHi ? 'वर्तमान अवस्था' : 'Active Stage'}
+                <span className="inline-block text-xs font-medium text-[#241909] bg-[#FEFADC] px-2 py-0.5 rounded mt-1.5 border border-[#E07B39]">
+                  {isHi ? 'अभी' : 'Active'}
                 </span>
               )}
             </div>
@@ -132,14 +131,14 @@ export const CropStageStepper: React.FC<CropStageStepperProps> = ({
         })}
       </div>
 
-      {/* Guidance Callout */}
-      <div className="flex items-start gap-3.5 bg-[#FFFDF5] border-2 border-[#E8C99A] rounded-2xl p-5 text-sm sm:text-base text-[#241909] shadow-sm">
-        <Calendar className="w-5 h-5 text-[#E07B39] flex-shrink-0 mt-0.5" />
+      {/* Guidance */}
+      <div className="flex items-start gap-3 bg-[#FFFDF5] border border-[#E8C99A] rounded-xl p-4 text-sm text-[#241909]">
+        <Calendar className="w-4 h-4 text-[#E07B39] flex-shrink-0 mt-0.5" />
         <div className="leading-relaxed">
-          <strong className="text-[#241909] font-black">
-            {isHi ? 'इस अवस्था के लिए मुख्य सलाह: ' : 'Recommended Action for Current Stage: '}
+          <strong className="font-semibold text-[#241909]">
+            {isHi ? 'अभी करें: ' : 'Current recommendation: '}
           </strong>
-          <span className="font-semibold text-[#5C4A30]">
+          <span className="text-[#5C4A30]">
             {isHi ? activeStage.guidanceHi : activeStage.guidance}
           </span>
         </div>

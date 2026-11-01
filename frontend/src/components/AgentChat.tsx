@@ -355,14 +355,14 @@ export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName
       {/* Top Banner / Sub-navigation */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E8C99A] pb-5">
         <div className="flex items-center space-x-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-[#241909] text-[#FEFADC] flex items-center justify-center font-bold text-xl shadow-md flex-shrink-0">
-            <Sparkles className="w-6 h-6 text-[#F3B391]" />
+          <div className="w-10 h-10 rounded-xl bg-[#241909] flex items-center justify-center flex-shrink-0">
+            <Sparkles className="w-5 h-5 text-[#F3B391]" />
           </div>
           <div>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-[#241909] tracking-tight">
+            <h2 className="text-lg font-bold text-[#241909]">
               {tx.headerTitle}
             </h2>
-            <p className="text-sm font-semibold text-[#5C4A30] mt-0.5">
+            <p className="text-xs text-[#5C4A30] mt-0.5">
               {tx.headerSubtitle}
             </p>
           </div>
@@ -400,7 +400,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName
           if (msg.role === 'user') {
             return (
               <div key={index} className="flex justify-end">
-                <div className="bg-[#241909] text-[#FEFADC] max-w-xl rounded-2xl px-5 py-3.5 text-base sm:text-lg font-bold leading-relaxed shadow-md">
+                <div className="bg-[#241909] text-[#FEFADC] max-w-xl rounded-xl px-4 py-3 text-sm font-medium leading-relaxed">
                   {msg.text}
                 </div>
               </div>
@@ -415,10 +415,10 @@ export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName
             <div key={index} className="space-y-4">
               {activeSubTab === 'advisory' ? (
                 /* ─── ADVISORY PRESENTATION CARD ─── */
-                <div className="bg-[#FEFADC] border-2 border-[#E8C99A] rounded-2xl p-6 sm:p-7 space-y-5 shadow-sm">
+                <div className="bg-[#FEFADC] border border-[#E8C99A] rounded-xl p-5 space-y-4">
                   {/* Title & Audio Read-Aloud */}
                   <div className="flex items-start justify-between border-b border-[#E8C99A] pb-3 gap-3">
-                    <h3 className="text-xl sm:text-2xl font-black text-[#241909]">
+                    <h3 className="text-lg font-bold text-[#241909]">
                       {adv.title || tx.defaultTitle}
                     </h3>
                     <button
@@ -440,16 +440,16 @@ export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName
                   </div>
 
                   {/* Summary Text */}
-                  <p className="text-base sm:text-lg font-medium text-[#241909] leading-relaxed">
+                  <p className="text-sm font-normal text-[#241909] leading-relaxed">
                     {adv.summary}
                   </p>
 
                   {/* Actionable Steps Box */}
                   {adv.actionable_steps && adv.actionable_steps.length > 0 && (
-                    <div className="bg-[#FFFDF5] border-2 border-[#E8C99A] rounded-xl p-5 space-y-3">
+                    <div className="bg-[#FFFDF5] border border-[#E8C99A] rounded-lg p-4 space-y-2.5">
                       <div className="flex items-center space-x-2">
                         <CheckCircle2 className="w-5 h-5 text-[#3A7D44]" />
-                        <h4 className="text-sm sm:text-base font-extrabold text-[#241909] uppercase tracking-wide">
+                        <h4 className="text-sm font-semibold text-[#241909]">
                           {tx.actionableHeader}
                         </h4>
                       </div>
@@ -457,7 +457,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName
                         {adv.actionable_steps.map((st: any, sIdx: number) => {
                           const formatted = formatStepText(st);
                           return (
-                            <li key={sIdx} className="text-sm sm:text-base font-semibold text-[#241909] flex items-start space-x-2.5">
+                            <li key={sIdx} className="text-sm text-[#241909] flex items-start space-x-2.5">
                               <span className="text-[#3A7D44] font-extrabold text-lg leading-none mt-0.5">•</span>
                               <span className="leading-relaxed">{formatted}</span>
                             </li>
@@ -472,7 +472,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName
                     <div className="pt-2 border-t border-[#E8C99A] space-y-2.5">
                       <div className="flex items-center space-x-2">
                         <BookOpen className="w-4 h-4 text-[#E07B39]" />
-                        <span className="text-xs sm:text-sm font-extrabold text-[#5C4A30] uppercase tracking-wider">
+                        <span className="text-xs font-semibold text-[#5C4A30] uppercase tracking-wide">
                           {tx.knowledgeHeader}
                         </span>
                       </div>
@@ -496,12 +496,12 @@ export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName
                 </div>
               ) : (
                 /* ─── AGENT EXECUTION TRACE VIEW ─── */
-                <div className="bg-[#FFFDF5] border-2 border-[#E8C99A] rounded-2xl p-5 space-y-3 shadow-sm">
+                <div className="bg-[#FFFDF5] border border-[#E8C99A] rounded-xl p-4 space-y-2.5">
                   <div className="flex items-center justify-between border-b border-[#E8C99A] pb-3">
                     <span className="text-sm sm:text-base font-extrabold text-[#241909] tracking-wide">
                       {tx.traceAuditHeader}
                     </span>
-                    <span className="text-xs font-extrabold px-3 py-1 rounded-full bg-green-100 text-green-800 border border-green-300">
+                    <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-green-100 text-green-800 border border-green-200">
                       {tx.traceAuditTag}
                     </span>
                   </div>
@@ -562,8 +562,8 @@ export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName
 
         {/* Loading Spinner */}
         {isLoading && (
-          <div className="flex items-center space-x-3 p-4 bg-[#FEFADC] border-2 border-[#E8C99A] rounded-2xl text-sm sm:text-base font-extrabold text-[#241909] animate-pulse shadow-sm">
-            <Sparkles className="w-5 h-5 text-[#E07B39] animate-spin" />
+          <div className="flex items-center space-x-3 p-4 bg-[#FEFADC] border border-[#E8C99A] rounded-xl text-sm font-medium text-[#5C4A30]">
+            <Sparkles className="w-5 h-5 text-[#E07B39] animate-spin" style={{ animationDuration: "2s" }} />
             <span>{tx.evaluating}</span>
           </div>
         )}
@@ -572,8 +572,8 @@ export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName
       </div>
 
       {/* Suggested Quick Questions */}
-      <div className="bg-[#FEFADC] border-2 border-[#E8C99A] rounded-2xl p-4 space-y-2">
-        <div className="flex items-center space-x-1.5 text-xs font-extrabold text-[#5C4A30] uppercase tracking-wider">
+      <div className="bg-[#FEFADC] border border-[#E8C99A] rounded-xl p-3.5 space-y-2">
+        <div className="flex items-center space-x-1.5 text-xs font-semibold text-[#5C4A30] uppercase tracking-wide">
           <HelpCircle className="w-4 h-4 text-[#E07B39]" />
           <span>{tx.commonQueriesTitle}</span>
         </div>
@@ -582,7 +582,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName
             <button
               key={idx}
               onClick={() => handleSend(q)}
-              className="px-3.5 py-2 rounded-xl bg-[#FFFDF5] hover:bg-[#F3B391] text-[#241909] border border-[#E8C99A] text-xs sm:text-sm font-extrabold transition-all shadow-sm"
+              className="px-3 py-1.5 rounded-lg bg-[#FFFDF5] hover:bg-[#F6D4BA] text-[#241909] border border-[#E8C99A] text-xs font-medium transition-colors"
             >
               {q}
             </button>
@@ -598,13 +598,13 @@ export const AgentChat: React.FC<AgentChatProps> = ({ userId, language, cropName
           onChange={(e) => setInputQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
           placeholder={tx.placeholder}
-          className="flex-1 px-5 py-4 rounded-2xl border-2 border-[#E8C99A] bg-[#FFFDF5] text-base sm:text-lg font-bold text-[#241909] focus:outline-none focus:ring-2 focus:ring-[#E07B39] placeholder-[#5C4A30]/60 shadow-inner"
+          className="flex-1 px-4 py-3 rounded-xl border border-[#E8C99A] bg-[#FFFDF5] text-sm text-[#241909] focus:outline-none focus:ring-2 focus:ring-[#F3B391]/40 focus:border-[#E07B39] placeholder-[#8A7A60]"
         />
 
         <button
           onClick={() => handleSend()}
           disabled={isLoading || !inputQuery.trim()}
-          className="px-6 py-4 rounded-2xl bg-[#F3B391] hover:bg-[#E8A070] text-[#241909] border border-[#E07B39] font-black transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center gap-2 flex-shrink-0"
+          className="px-4 py-3 rounded-xl bg-[#F3B391] hover:bg-[#E8A070] text-[#241909] border border-[#E07B39] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 flex-shrink-0"
         >
           <span>{tx.sendBtn}</span>
           <Send className="w-5 h-5" />
